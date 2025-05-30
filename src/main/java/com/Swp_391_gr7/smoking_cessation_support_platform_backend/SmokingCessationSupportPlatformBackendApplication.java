@@ -9,5 +9,4 @@ public class SmokingCessationSupportPlatformBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SmokingCessationSupportPlatformBackendApplication.class, args);
 	}
-
 }
