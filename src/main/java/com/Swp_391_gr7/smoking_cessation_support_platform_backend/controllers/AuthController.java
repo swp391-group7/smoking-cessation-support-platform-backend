@@ -52,7 +52,7 @@ public class AuthController {
          User user = User
                  .builder()
                  .username(signinRequest.getUsername())
-                 .password(signinRequest.getPassword())
+                 .password(passwordEncoder.encode(signinRequest.getPassword()))
                  .fullName(signinRequest.getFullName())
                  .build();
          try {
