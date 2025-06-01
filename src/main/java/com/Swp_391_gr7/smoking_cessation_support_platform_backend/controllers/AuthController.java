@@ -54,6 +54,7 @@ public class AuthController {
                  .username(signinRequest.getUsername())
                  .password(passwordEncoder.encode(signinRequest.getPassword()))
                  .fullName(signinRequest.getFullName())
+                 .email(signinRequest.getEmail())
                  .build();
          try {
              user = userRepository.save(user);
