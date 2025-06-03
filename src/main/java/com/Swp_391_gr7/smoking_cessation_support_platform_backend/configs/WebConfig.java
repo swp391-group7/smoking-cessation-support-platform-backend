@@ -19,21 +19,27 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor);
+        registry.addInterceptor(jwtInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/auth/**",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html",
+                        "/webjars/**"
+                );
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI().info(
                 new Info()
-                        .title("Smoking Cessation Support Platform API")
+                        .title("API doc")
                         .version("1.0.0")
-                        .description("API documentation for the Smoking Cessation Support Platform")
+                        .description("API doc")
         );
     }
 }

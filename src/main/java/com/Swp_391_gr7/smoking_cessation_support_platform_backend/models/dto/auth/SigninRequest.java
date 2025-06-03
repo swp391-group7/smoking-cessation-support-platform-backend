@@ -25,4 +25,9 @@ public class SigninRequest {
             example = "John Doe"
     )
     private String fullName;
+    @Schema(
+            description = "Email of the user",
+            example = "email@gmail.com"
+    )
+    private String email;
 }

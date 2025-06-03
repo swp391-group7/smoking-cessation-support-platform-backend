@@ -20,55 +20,59 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-     private static final String ERROR_MESSAGE ="Invalid Username or Password";
-     private final UserRepository userRepository;
-     private final JWTService jwtService;
-     private final PasswordEncoder passwordEncoder;
+    private static final String ERROR_MESSAGE ="Invalid Username or Password";
+    private final UserRepository userRepository;
+    private final JWTService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-     @Operation (
-             summary = "User Signup",
-             description = "Creates a new user and returns a JWT token upon successful registration."
-     )
-     @ApiResponses(value = {
-             @ApiResponse(
-                     responseCode = "200",
-                     description = "Token generated successfully",
-                     content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
-             ),
-             @ApiResponse(
-                     responseCode = "400",
-                     description = "Username already existed",
-                     content = @Content(mediaType = "text/plain")
-             )
-     })
+    @Operation (
+            summary = "User Signup",
+            description = "Creates a new user and returns a JWT token upon successful registration."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Token generated successfully",
+                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Username already existed",
+                    content = @Content(mediaType = "text/plain")
+            )
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SigninRequest signinRequest) {
-         User user = User
-                 .builder()
-                 .username(signinRequest.getUsername())
-                 .password(signinRequest.getPassword())
-                 .fullName(signinRequest.getFullName())
-                 .build();
-         try {
-             user = userRepository.save(user);
-         }
-         catch (Exception e){
-                return ResponseEntity.badRequest().body("Username already existed");
-         }
-         final String token = jwtService.generateToken(user.getId());
-         return ResponseEntity.ok(token);
-     }
+        String hashedPassword = passwordEncoder.encode(signinRequest.getPassword());
+        User user = User
+                .builder()
+                .username(signinRequest.getUsername())
+                .password(hashedPassword)
+                .fullName(signinRequest.getFullName())
+                .email(signinRequest.getEmail())
+                .build();
+        try {
+            user = userRepository.save(user);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body("Username already existed");
+        }
+        final String token = jwtService.generateToken(user.getId());
+        return ResponseEntity.ok(token);
+    }
 
-     @Operation(
-             summary = "User Login",
-             description = "Authenticates a user and returns a JWT token if the credentials are valid."
-     )
+    @Operation(
+            summary = "User Login",
+            description = "Authenticates a user and returns a JWT token if the credentials are valid."
+    )
     @ApiResponses(value={
             @ApiResponse(
                     responseCode ="200",
@@ -83,7 +87,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginrequest){
-       final Optional<User> userOptional = userRepository.findByUsernameContainsIgnoreCase(loginrequest.getUsername());
+        final Optional<User> userOptional = userRepository.findByUsernameContainsIgnoreCase(loginrequest.getUsername());
         if (!userOptional.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -96,6 +100,18 @@ public class AuthController {
                     .body(ERROR_MESSAGE);
         }
         final String token = jwtService.generateToken(user.getId());
-        return ResponseEntity.ok(token);
+        Map<String, Object> userPayload = new HashMap<>();
+        userPayload.put("id", user.getId());
+        userPayload.put("full_name", user.getFullName());
+        userPayload.put("avatar_path", user.getAvtarPath());
+        // Nếu cần thêm trường khác (email, phoneNumber…), bạn có thể put thêm ở đây.
+
+        // 5. Gom token + userPayload vào 1 Map chung
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        responseBody.put("user", userPayload);
+
+        // 6. Trả về JSON kiểu: { "token": "...", "user": { "id": "...", "full_name": "..." } }
+        return ResponseEntity.ok(responseBody);
     }
 }

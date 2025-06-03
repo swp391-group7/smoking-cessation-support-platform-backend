@@ -76,6 +76,19 @@
 			<version>0.11.5</version>
 		</dependency>
 
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope> <!-- RẤT QUAN TRỌNG -->
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId> <!-- Dùng để parse JSON -->
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
 
 
 
