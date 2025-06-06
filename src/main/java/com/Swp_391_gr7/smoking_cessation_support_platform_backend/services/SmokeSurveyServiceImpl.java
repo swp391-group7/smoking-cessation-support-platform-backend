@@ -10,13 +10,14 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.U
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional  // Đảm bảo load + update/insert đều trong cùng transaction
 public class SmokeSurveyServiceImpl implements SmokeSurveyService {
 
     private final SmokeSurveyRepository repository;
@@ -29,7 +30,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                         HttpStatus.NOT_FOUND, "User not found: " + userId
                 ));
         Smoke_Survey entity = Smoke_Survey.builder()
-                .id(UUID.randomUUID())
+                // Không set .id(...) để JPA tự generate qua @GeneratedValue
                 .user(user)
                 .smokeDuration(request.getSmokeDuration())
                 .cigarettesPerDay(request.getCigarettesPerDay())
@@ -39,7 +40,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                 .healthStatus(request.getHealthStatus())
                 .dependencyLevel(request.getDependencyLevel())
                 .note(request.getNote())
-                .createAt(LocalDateTime.now())
+                // Không set createAt, Hibernate tự xử lý @CreationTimestamp
                 .build();
         Smoke_Survey saved = repository.save(entity);
         return mapToDto(saved);
@@ -62,6 +63,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                         HttpStatus.NOT_FOUND,
                         "Survey not found for userId: " + userId
                 ));
+        // Update từng trường
         entity.setSmokeDuration(request.getSmokeDuration());
         if (request.getCigarettesPerDay() != null) {
             entity.setCigarettesPerDay(request.getCigarettesPerDay());
@@ -76,6 +78,8 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
         entity.setHealthStatus(request.getHealthStatus());
         entity.setDependencyLevel(request.getDependencyLevel());
         entity.setNote(request.getNote());
+
+        // Vì @Transactional, Hibernate tự flush update trước khi commit
         Smoke_Survey updated = repository.save(entity);
         return mapToDto(updated);
     }
