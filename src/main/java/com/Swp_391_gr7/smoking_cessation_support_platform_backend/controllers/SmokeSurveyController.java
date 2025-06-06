@@ -1,9 +1,8 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
-
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.CreateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.SmokeSurveyDto;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.UpdateSmokeSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSmokeSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.SmokeSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -37,15 +37,19 @@ public class SmokeSurveyController {
     })
     @PostMapping
     public ResponseEntity<SmokeSurveyDto> createSurvey(
-            @RequestParam UUID userId,
             @Valid @RequestBody CreateSmokeSurveyRequest req) {
-        SmokeSurveyDto dto = surveyService.createSurvey(userId, req);
+
+        // Lấy userId trực tiếp từ JWT (do JwtAuthenticationFilter gán vào SecurityContext)
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        SmokeSurveyDto dto = surveyService.createSurvey(currentUserId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Operation(
             summary = "Get Smoke Survey by User",
-            description = "Lấy thông tin bảng khảo sát hút thuốc của user theo userId."
+            description = "Lấy thông tin bảng khảo sát hút thuốc của user hiện tại."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
@@ -55,15 +59,17 @@ public class SmokeSurveyController {
                     content = @Content)
     })
     @GetMapping
-    public ResponseEntity<SmokeSurveyDto> getSurvey(
-            @RequestParam UUID userId) {
-        SmokeSurveyDto dto = surveyService.getSurvey(userId);
+    public ResponseEntity<SmokeSurveyDto> getSurvey() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        SmokeSurveyDto dto = surveyService.getSurvey(currentUserId);
         return ResponseEntity.ok(dto);
     }
 
     @Operation(
             summary = "Update Smoke Survey",
-            description = "Cập nhật thông tin bảng khảo sát hút thuốc cho user."
+            description = "Cập nhật thông tin bảng khảo sát hút thuốc cho user hiện tại."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Survey updated successfully",
@@ -76,15 +82,18 @@ public class SmokeSurveyController {
     })
     @PutMapping
     public ResponseEntity<SmokeSurveyDto> updateSurvey(
-            @RequestParam UUID userId,
             @Valid @RequestBody UpdateSmokeSurveyRequest req) {
-        SmokeSurveyDto dto = surveyService.updateSurvey(userId, req);
+
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        SmokeSurveyDto dto = surveyService.updateSurvey(currentUserId, req);
         return ResponseEntity.ok(dto);
     }
 
     @Operation(
             summary = "Delete Smoke Survey",
-            description = "Xóa bảng khảo sát hút thuốc của user nếu có."
+            description = "Xóa bảng khảo sát hút thuốc của user hiện tại nếu có."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Survey deleted successfully",
@@ -93,9 +102,11 @@ public class SmokeSurveyController {
                     content = @Content)
     })
     @DeleteMapping
-    public ResponseEntity<Void> deleteSurvey(
-            @RequestParam UUID userId) {
-        surveyService.deleteSurvey(userId);
+    public ResponseEntity<Void> deleteSurvey() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        surveyService.deleteSurvey(currentUserId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,12 +1,11 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services;
 
-import org.springframework.stereotype.Component;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.UUID;
@@ -51,7 +50,6 @@ public class JWTService {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-
         return UUID.fromString(rawId);
     }
 }

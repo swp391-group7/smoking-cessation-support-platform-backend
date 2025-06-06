@@ -19,4 +19,5 @@ import org.springframework.context.annotation.Configuration;
         scheme = "bearer"
 )
 public class OpenAPIConfig {
+    // Không cần thêm bean gì, annotation ở trên đã đủ để Swagger UI hiểu có security scheme "bearerAuth"
 }
