@@ -1,6 +1,5 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
-
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.auth.LoginRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.auth.SigninRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
@@ -12,106 +11,123 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private static final String ERROR_MESSAGE ="Invalid Username or Password";
+    private static final String ERROR_MESSAGE = "Invalid Username or Password";
+
     private final UserRepository userRepository;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
 
-    @Operation (
+    @Operation(
             summary = "User Signup",
             description = "Creates a new user and returns a JWT token upon successful registration."
     )
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
                     description = "Token generated successfully",
-                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Map.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Username already existed",
-                    content = @Content(mediaType = "text/plain")
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
             )
     })
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SigninRequest signinRequest) {
+    @PostMapping(
+            value = "/signup",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Map<String, String>> signup(
+            @RequestBody SigninRequest signinRequest) {
+
         String hashedPassword = passwordEncoder.encode(signinRequest.getPassword());
-        User user = User
-                .builder()
+        User user = User.builder()
                 .username(signinRequest.getUsername())
                 .password(hashedPassword)
                 .fullName(signinRequest.getFullName())
                 .email(signinRequest.getEmail())
                 .build();
+
         try {
             user = userRepository.save(user);
+        } catch (Exception e) {
+            Map<String, String> error = Collections.singletonMap("error", "Username already existed");
+            return ResponseEntity.badRequest().body(error);
         }
-        catch (Exception e){
-            return ResponseEntity.badRequest().body("Username already existed");
-        }
-        final String token = jwtService.generateToken(user.getId());
-        return ResponseEntity.ok(token);
+
+        String token = jwtService.generateToken(user.getId());
+        Map<String, String> responseBody = Collections.singletonMap("token", token);
+        return ResponseEntity.ok(responseBody);
     }
 
     @Operation(
             summary = "User Login",
             description = "Authenticates a user and returns a JWT token if the credentials are valid."
     )
-    @ApiResponses(value={
+    @ApiResponses({
             @ApiResponse(
-                    responseCode ="200",
-                    description = "Login successful, returns JWT token",
-                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                    responseCode = "200",
+                    description = "Login successful, returns JWT token and user info",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Map.class)
+                    )
             ),
             @ApiResponse(
-                    responseCode ="401",
-                    description =" Invalid username or password",
-                    content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class))
+                    responseCode = "401",
+                    description = "Invalid username or password",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
             )
     })
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginrequest){
-        final Optional<User> userOptional = userRepository.findByUsernameContainsIgnoreCase(loginrequest.getUsername());
-        if (!userOptional.isPresent()) {
+    @PostMapping(
+            value = "/login",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Map<String, Object>> login(
+            @RequestBody LoginRequest loginRequest) {
+
+        Optional<User> userOptional = userRepository
+                .findByUsernameContainsIgnoreCase(loginRequest.getUsername());
+        if (userOptional.isEmpty()) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ERROR_MESSAGE);
+                    .status(401)
+                    .body(Collections.singletonMap("error", ERROR_MESSAGE));
         }
-        final User user = userOptional.get();
-        if (!passwordEncoder.matches(loginrequest.getPassword(), user.getPassword())) {
+
+        User user = userOptional.get();
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ERROR_MESSAGE);
+                    .status(401)
+                    .body(Collections.singletonMap("error", ERROR_MESSAGE));
         }
-        final String token = jwtService.generateToken(user.getId());
+
+        String token = jwtService.generateToken(user.getId());
         Map<String, Object> userPayload = new HashMap<>();
         userPayload.put("id", user.getId());
         userPayload.put("full_name", user.getFullName());
         userPayload.put("avatar_path", user.getAvtarPath());
-        // Nếu cần thêm trường khác (email, phoneNumber…), bạn có thể put thêm ở đây.
+        // add more fields if needed
 
-        // 5. Gom token + userPayload vào 1 Map chung
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", token);
         responseBody.put("user", userPayload);
 
-        // 6. Trả về JSON kiểu: { "token": "...", "user": { "id": "...", "full_name": "..." } }
         return ResponseEntity.ok(responseBody);
     }
 }
