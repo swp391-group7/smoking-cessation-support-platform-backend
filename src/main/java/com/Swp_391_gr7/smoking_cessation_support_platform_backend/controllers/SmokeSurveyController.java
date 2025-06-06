@@ -1,9 +1,9 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.CreateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.SmokeSurveyDto;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.survey.UpdateSmokeSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSmokeSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.SmokeSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -99,3 +99,4 @@ public class SmokeSurveyController {
         return ResponseEntity.noContent().build();
     }
 }
+

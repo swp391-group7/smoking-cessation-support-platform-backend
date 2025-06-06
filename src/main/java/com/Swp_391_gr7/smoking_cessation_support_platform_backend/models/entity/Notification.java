@@ -32,7 +32,7 @@ public class Notification {
     private String message; // Nội dung thông báo
 
     @Column(nullable = false)
-    private String channel; // Kênh gửi (email, push, sms)
+    private String channel; // Kênh gửi (email, push)
 
     @Column(name = "sent_at")
     private LocalDateTime sentAt;        // Thời điểm gửi
