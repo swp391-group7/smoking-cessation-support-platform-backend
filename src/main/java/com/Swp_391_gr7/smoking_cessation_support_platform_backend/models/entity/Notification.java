@@ -1,5 +1,6 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.*;
 
@@ -35,6 +36,7 @@ public class Notification {
     private String channel; // Kênh gửi (email, push)
 
     @Column(name = "sent_at")
+    @CreationTimestamp
     private LocalDateTime sentAt;        // Thời điểm gửi
 
     @Column(name = "expiration_at")
