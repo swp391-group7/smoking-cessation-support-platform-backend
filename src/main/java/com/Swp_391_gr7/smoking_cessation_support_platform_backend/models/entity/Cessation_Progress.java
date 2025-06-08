@@ -13,6 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Setter
+@Getter
 public class Cessation_Progress {
     @Id  // Khóa chính UUID
     @GeneratedValue(generator = "UUID")
@@ -44,4 +46,6 @@ public class Cessation_Progress {
 
     @Column(length = 50)
     private String status;  // Trạng thái ngày
+
+
 }

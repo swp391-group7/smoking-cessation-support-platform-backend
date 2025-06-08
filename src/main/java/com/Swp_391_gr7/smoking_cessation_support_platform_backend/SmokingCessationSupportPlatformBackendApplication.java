@@ -10,3 +10,5 @@ public class SmokingCessationSupportPlatformBackendApplication {
 		SpringApplication.run(SmokingCessationSupportPlatformBackendApplication.class, args);
 	}
 }
+
+//http://localhost:8080/swagger-ui/index.html
