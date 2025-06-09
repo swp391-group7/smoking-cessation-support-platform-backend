@@ -38,9 +38,7 @@ public class CassesionProgressController {
     }
 
     @GetMapping("/user/{userId}/date/{date}")
-    public ResponseEntity<Optional<Cessation_Progress>> getLogByUserAndDate(
-            @PathVariable UUID userId,
-            @PathVariable String date) {
+    public ResponseEntity<Optional<Cessation_Progress>> getLogByUserAndDate(@PathVariable UUID userId,@PathVariable String date) {
         LocalDate logDate = LocalDate.parse(date);
         return ResponseEntity.ok(logRepository.findByUserIdAndLogDate(userId, logDate));
     }

@@ -16,7 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
+@Setter
+@Getter
 public class Quit_Plan {
     @Id  // Khóa chính UUID
     @GeneratedValue(generator = "UUID")
