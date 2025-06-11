@@ -25,10 +25,7 @@ public class Cessation_Progress {
             foreignKey = @ForeignKey(name = "fk_progress_plan"))
     private Quit_Plan plan;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Người dùng
-    @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_progress_user"))
-    private User user;
+
 
     @Column(name = "log_date", nullable = false)
     private LocalDate logDate;  // Ngày log

@@ -17,5 +17,7 @@ public class UpdateBlogPostRequest {
 
     private String content;
 
+    private String Blog_type;
+
     private String imageUrl;
 }

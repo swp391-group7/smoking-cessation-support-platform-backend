@@ -23,6 +23,11 @@ public class Quit_Plan {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Người dùng
+    @JoinColumn (name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_quitplan_user"))
+    private User user ;
+
     @ManyToOne(fetch = FetchType.LAZY)  // Coach hỗ trợ
     @JoinColumn(name = "coach_id", foreignKey = @ForeignKey(name = "fk_quitplan_coach"))
     private Coach coach;

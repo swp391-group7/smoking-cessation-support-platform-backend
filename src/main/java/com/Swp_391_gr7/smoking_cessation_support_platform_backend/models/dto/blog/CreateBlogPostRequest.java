@@ -23,5 +23,8 @@ public class CreateBlogPostRequest {
     @NotBlank
     private String content;
 
-    private List<MultipartFile> images;
+    @NotBlank
+    private String BlogType;
+
+    private String images;
 }
