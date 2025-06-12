@@ -8,6 +8,5 @@ import java.util.UUID;
 
 public interface BlogRepository extends JpaRepository<Blog_Post, UUID> {
     Optional<Blog_Post> findByUserId(UUID userId);
-    Optional<Blog_Post> findByBlogType(String blogType);
-
+    Optional<Blog_Post> findByContent(String blogType);
 }

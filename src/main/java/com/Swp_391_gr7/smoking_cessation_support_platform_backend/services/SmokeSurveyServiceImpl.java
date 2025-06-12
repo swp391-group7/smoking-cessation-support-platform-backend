@@ -29,6 +29,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found: " + userId
                 ));
+
         Smoke_Survey entity = Smoke_Survey.builder()
                 // Không set .id(...) để JPA tự generate qua @GeneratedValue
                 .user(user)
@@ -110,6 +111,8 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                 .build();
     }
 }
+
+
 
 
 //testing commit

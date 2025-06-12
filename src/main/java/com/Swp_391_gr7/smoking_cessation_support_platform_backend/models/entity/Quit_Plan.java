@@ -35,8 +35,8 @@ public class Quit_Plan {
     private Coach coach;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Survey gốc
-    @JoinColumn(name = "smoke_survey_id", nullable = false,
+    @ManyToOne(fetch = FetchType.LAZY)  // Survey gốc
+    @JoinColumn(name = "smoke_survey_id",
             foreignKey = @ForeignKey(name = "fk_quitplan_smokesurvey"))
     private Smoke_Survey smokeSurvey;
 
@@ -54,7 +54,7 @@ public class Quit_Plan {
 
 
     @CreationTimestamp
-    @Column(name = "create_at", nullable = false, updatable = false)
+    @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;  // Thời điểm tạo
 
     @PrePersist

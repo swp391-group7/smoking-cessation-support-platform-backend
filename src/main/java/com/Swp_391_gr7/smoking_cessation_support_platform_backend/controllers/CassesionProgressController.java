@@ -19,7 +19,7 @@ public class CassesionProgressController {
 
     private final DailyLogRepository logRepository;
 
-    @PostMapping("/create log")
+    @PostMapping("/create-log")
     public ResponseEntity<Cessation_Progress> createLog(@RequestBody Cessation_Progress log) {
         log.setId(null);
         log.setLogDate(LocalDate.now());
@@ -27,23 +27,23 @@ public class CassesionProgressController {
         return ResponseEntity.ok(savedLog);
     }
 
-    @GetMapping("display all logs")
+    @GetMapping("display-all-logs")
     public ResponseEntity<List<Cessation_Progress>> getAllLogs() {
         return ResponseEntity.ok(logRepository.findAll());
     }
 
-    @GetMapping("/user/{userId}/display logs by user")
+    @GetMapping("/user/{userId}/display-logs-by-user")
     public ResponseEntity<List<Cessation_Progress>> getLogsByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok(logRepository.findByUserId(userId));
     }
 
-    @GetMapping("/user/{userId}/date/{date}/display log by user and date")
+    @GetMapping("/user/{userId}/date/{date}/display-log-by-user-and-date")
     public ResponseEntity<Optional<Cessation_Progress>> getLogByUserAndDate(@PathVariable UUID userId,@PathVariable String date) {
         LocalDate logDate = LocalDate.parse(date);
         return ResponseEntity.ok(logRepository.findByUserIdAndLogDate(userId, logDate));
     }
 
-    @DeleteMapping("/{id}/delete log by id")
+    @DeleteMapping("/{id}/delete-log-by-id")
     public ResponseEntity<Void> deleteLog(@PathVariable UUID id) {
         logRepository.deleteById(id);
         return ResponseEntity.noContent().build();
