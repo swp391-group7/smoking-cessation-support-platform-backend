@@ -35,7 +35,7 @@ public class SmokeSurveyController {
             @ApiResponse(responseCode = "400", description = "Invalid input data",
                     content = @Content)
     })
-    @PostMapping
+    @PostMapping("/create survey")
     public ResponseEntity<SmokeSurveyDto> createSurvey(
             @Valid @RequestBody CreateSmokeSurveyRequest req) {
 
@@ -58,7 +58,7 @@ public class SmokeSurveyController {
             @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
                     content = @Content)
     })
-    @GetMapping
+    @GetMapping("/get survey")
     public ResponseEntity<SmokeSurveyDto> getSurvey() {
         UUID currentUserId = (UUID) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -80,7 +80,7 @@ public class SmokeSurveyController {
             @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
                     content = @Content)
     })
-    @PutMapping
+    @PutMapping("/update survey")
     public ResponseEntity<SmokeSurveyDto> updateSurvey(
             @Valid @RequestBody UpdateSmokeSurveyRequest req) {
 
@@ -101,7 +101,7 @@ public class SmokeSurveyController {
             @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
                     content = @Content)
     })
-    @DeleteMapping
+    @DeleteMapping("/delete survey")
     public ResponseEntity<Void> deleteSurvey() {
         UUID currentUserId = (UUID) SecurityContextHolder.getContext()
                 .getAuthentication()

@@ -29,6 +29,10 @@ public class Cessation_Progress {
     private Quit_Plan plan;
 
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Người dùng
+    @JoinColumn (name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_quitplan_user"))
+    private User user ;
 
 
     @CreationTimestamp

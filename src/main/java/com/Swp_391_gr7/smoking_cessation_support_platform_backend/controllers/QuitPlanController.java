@@ -16,22 +16,22 @@ import java.util.UUID;
 public class QuitPlanController {
     private final QuitPlanService quitPlanService;
 
-    @PostMapping
+    @PostMapping("/create plan")
     public ResponseEntity<QuitPlanResponse> create(@RequestBody QuitPlanRequest request) {
         return ResponseEntity.ok(quitPlanService.create(request));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update plan")
     public ResponseEntity<QuitPlanResponse> update(@PathVariable UUID id, @RequestBody QuitPlanRequest request) {
         return ResponseEntity.ok(quitPlanService.update(id, request));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/display plan")
     public ResponseEntity<QuitPlanResponse> get(@PathVariable UUID id) {
         return ResponseEntity.ok(quitPlanService.get(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete plan")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         quitPlanService.delete(id);
         return ResponseEntity.noContent().build();

@@ -27,8 +27,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         Quit_Plan plan = Quit_Plan.builder()
                 .user(user)
                 .startDate(request.getStartDate())
-                .goal(request.getGoal())
-                .note(request.getNote())
+                .targetDate(request.getStartDate())
+                .method(request.getMethod())
                 .build();
         Quit_Plan saved = quitPlanRepository.save(plan);
         return toResponse(saved);
@@ -39,8 +39,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         Quit_Plan plan = quitPlanRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Plan not found"));
         plan.setStartDate(request.getStartDate());
-        plan.setGoal(request.getGoal());
-        plan.setNote(request.getNote());
+        plan.setTargetDate(request.getTargetDate());
+        plan.setMethod(request.getMethod());
         Quit_Plan updated = quitPlanRepository.save(plan);
         return toResponse(updated);
     }
@@ -62,8 +62,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         dto.setId(plan.getId());
         dto.setUserId(plan.getUser().getId());
         dto.setStartDate(plan.getStartDate());
-        dto.setGoal(plan.getTargetDate());
-        dto.setNote(plan.getNote());
+        dto.setTargetDate(plan.getTargetDate());
+        dto.setMethod(plan.getMethod());
         return dto;
     }
 }

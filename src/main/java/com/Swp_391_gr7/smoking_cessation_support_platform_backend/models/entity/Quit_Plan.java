@@ -35,11 +35,6 @@ public class Quit_Plan {
     private Coach coach;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Người dùng
-    @JoinColumn (name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_quitplan_user"))
-    private User user ;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Survey gốc
     @JoinColumn(name = "smoke_survey_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_quitplan_smokesurvey"))

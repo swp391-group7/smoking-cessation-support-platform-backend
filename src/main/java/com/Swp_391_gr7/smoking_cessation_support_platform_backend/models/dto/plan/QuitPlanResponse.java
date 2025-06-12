@@ -4,15 +4,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+
 @Setter
 @Getter
 public class QuitPlanResponse {
     private UUID id;
     private UUID userId;
+    private UUID coachId;
     private LocalDate startDate;
-    private String goal;
-    private String note;
+    private UUID smokeSurveyId;
+    private String method;
+    private LocalDate targetDate;
+    private LocalDateTime createAt;
+    private String status;
 }
