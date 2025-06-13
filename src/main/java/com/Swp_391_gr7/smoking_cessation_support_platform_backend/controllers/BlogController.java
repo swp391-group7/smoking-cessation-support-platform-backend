@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -88,5 +89,23 @@ public class BlogController {
     @GetMapping("/display-all-blog")
     public ResponseEntity<List<BlogPostDto>> getAll() {
         return ResponseEntity.ok(blogPostService.getAll());
+    }
+
+    // Add this import
+
+
+    @Operation(summary = "Search Blog Posts by content or username")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Blogs retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BlogPostDto.class)))
+    })
+    @GetMapping("/search")
+    public ResponseEntity<List<BlogPostDto>> searchBlogs(
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String title) {
+        List<BlogPostDto> results = blogPostService.searchByContentTitleOrUsername(content, username, title);
+        return ResponseEntity.ok(results);
     }
 }

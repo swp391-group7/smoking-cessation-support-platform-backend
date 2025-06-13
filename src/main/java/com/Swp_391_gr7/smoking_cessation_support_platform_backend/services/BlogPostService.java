@@ -13,4 +13,5 @@ public interface BlogPostService {
     Optional<BlogPostDto> getById(UUID id);
     void delete(UUID id, UUID userId);
     List<BlogPostDto> getAll();
+    List<BlogPostDto> searchByContentTitleOrUsername(String content, String title, String username);
 }

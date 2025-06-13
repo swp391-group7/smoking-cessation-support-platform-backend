@@ -74,6 +74,21 @@ public class BlogPostServiceImpl implements BlogPostService {
         return blogRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<BlogPostDto> searchByContentTitleOrUsername(String content, String username, String title) {
+        List<Blog_Post> posts;
+        if (content != null && !content.isEmpty()) {
+            posts = blogRepository.findByContentContainingIgnoreCase(content);
+        }else if (title != null && !title.isEmpty()) {
+            posts = blogRepository.findByTitleContainingIgnoreCase(title);}
+        else if (username != null && !username.isEmpty()) {
+            posts = blogRepository.findByUser_UsernameContainingIgnoreCase(username);
+        } else {
+            posts = List.of();
+        }
+        return posts.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
     private BlogPostDto mapToDto(Blog_Post entity) {
         return BlogPostDto.builder()
                 .id(entity.getId() != null ? entity.getId().toString() : null)
