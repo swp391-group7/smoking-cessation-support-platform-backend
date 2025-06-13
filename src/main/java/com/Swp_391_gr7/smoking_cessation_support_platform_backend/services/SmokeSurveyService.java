@@ -28,4 +28,6 @@ public interface SmokeSurveyService {
      * Xóa khảo sát theo userId, ném lỗi nếu không tìm thấy
      */
     void deleteSurvey(UUID userId);
+
+    SmokeSurveyDto getSurveyById(UUID surveyId);
 }

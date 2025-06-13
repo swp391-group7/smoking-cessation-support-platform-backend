@@ -95,6 +95,14 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
         repository.delete(entity);
     }
 
+    public SmokeSurveyDto getSurveyById(UUID surveyId) {
+        Smoke_Survey entity = repository.findById(surveyId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Survey not found for id: " + surveyId
+                ));
+        return mapToDto(entity);
+    }
+
     private SmokeSurveyDto mapToDto(Smoke_Survey entity) {
         return SmokeSurveyDto.builder()
                 .id(entity.getId())
