@@ -24,17 +24,17 @@ import java.util.stream.Collectors;
 public class QuitPlanServiceImpl implements QuitPlanService {
     private final QuitPlanRepository quitPlanRepository;
     private final UserRepository userRepository;
-    private final SmokeSurveyRepository smokeSurveyRepository;
+    //private final SmokeSurveyRepository smokeSurveyRepository;
 
     @Override
     public QuitPlanDto create(UUID userId, QuitPlanCreateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        Smoke_Survey smokeSurvey = smokeSurveyRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Smoke survey not found"));
+//        Smoke_Survey smokeSurvey = smokeSurveyRepository.findByUserId(user.getId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Smoke survey not found"));
         Quit_Plan plan = Quit_Plan.builder()
                 .user(user)
-                .smokeSurvey(smokeSurvey)
+                //.smokeSurvey(smokeSurvey)
                 .startDate(request.getStartDate())
                 .targetDate(request.getTargetDate())
                 .method(request.getMethod())
@@ -98,8 +98,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         return QuitPlanDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
-                .coachId(entity.getCoach() != null ? entity.getCoach().getUserId() : null)
-                .smokeSurveyId(entity.getSmokeSurvey() != null ? entity.getSmokeSurvey().getId() : null)
+                //.smokeSurveyId(entity.getSmokeSurvey() != null ? entity.getSmokeSurvey().getId() : null)
                 .startDate(entity.getStartDate())
                 .targetDate(entity.getTargetDate())
                 .method(entity.getMethod())

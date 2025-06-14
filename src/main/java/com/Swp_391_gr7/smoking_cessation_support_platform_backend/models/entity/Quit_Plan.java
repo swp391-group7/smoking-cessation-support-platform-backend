@@ -30,15 +30,11 @@ public class Quit_Plan {
             foreignKey = @ForeignKey(name = "fk_quitplan_user"))
     private User user ;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Coach hỗ trợ
-    @JoinColumn(name = "coach_id", foreignKey = @ForeignKey(name = "fk_quitplan_coach"))
-    private Coach coach;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)  // Survey gốc
-    @JoinColumn(name = "smoke_survey_id",
-            foreignKey = @ForeignKey(name = "fk_quitplan_smokesurvey"))
-    private Smoke_Survey smokeSurvey;
+//    @ManyToOne(fetch = FetchType.LAZY)  // Survey gốc
+//    @JoinColumn(name = "smoke_survey_id",
+//            foreignKey = @ForeignKey(name = "fk_quitplan_smokesurvey"))
+//    private Smoke_Survey smokeSurvey;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;  // Ngày bắt đầu

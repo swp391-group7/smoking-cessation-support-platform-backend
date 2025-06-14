@@ -13,9 +13,8 @@ import java.util.UUID;
 public class QuitPlanResponse {
     private UUID id;
     private UUID userId;
-    private UUID coachId;
     private LocalDate startDate;
-    private UUID smokeSurveyId;
+
     private String method;
     private LocalDate targetDate;
     private LocalDateTime createAt;

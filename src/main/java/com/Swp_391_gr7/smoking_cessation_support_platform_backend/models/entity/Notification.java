@@ -21,7 +21,7 @@ public class Notification {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Nối tới User
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Nối tới User
     @JoinColumn(name = "user_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_notification_user"))
     private User user;

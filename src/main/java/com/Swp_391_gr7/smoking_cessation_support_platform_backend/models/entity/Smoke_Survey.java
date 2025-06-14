@@ -24,7 +24,7 @@ public class Smoke_Survey {
     @Version
     private Long version;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_smoke_survey_user"))
     private User user;
