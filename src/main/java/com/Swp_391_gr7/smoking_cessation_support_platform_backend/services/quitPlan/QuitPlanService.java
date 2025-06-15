@@ -1,4 +1,4 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;

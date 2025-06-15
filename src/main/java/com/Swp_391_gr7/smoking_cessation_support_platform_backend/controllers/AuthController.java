@@ -4,7 +4,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.aut
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.auth.SigninRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.JWTService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt.JWTService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

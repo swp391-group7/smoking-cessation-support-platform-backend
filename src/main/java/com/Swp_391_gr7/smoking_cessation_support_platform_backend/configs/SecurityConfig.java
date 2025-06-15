@@ -1,6 +1,6 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.configs;
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.JWTService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt.JWTService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

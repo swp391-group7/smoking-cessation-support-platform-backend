@@ -1,12 +1,10 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Smoke_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.SmokeSurveyRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
