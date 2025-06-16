@@ -1,6 +1,5 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt;
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt.JWTService;
 import io.jsonwebtoken.JwtException;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.testng.annotations.BeforeMethod;

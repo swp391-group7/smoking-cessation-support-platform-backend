@@ -1,6 +1,8 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -47,8 +49,10 @@ public class Smoke_Survey {
     @Column(name = "health_status", length = 255)
     private String healthStatus;
 
-    @Column(name = "dependency_level", length = 50, nullable = false)
-    private String dependencyLevel;
+    @Column(name = "dependency_level", nullable = false)
+    @Min(1)
+    @Max(5)
+    private Integer dependencyLevel;
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;

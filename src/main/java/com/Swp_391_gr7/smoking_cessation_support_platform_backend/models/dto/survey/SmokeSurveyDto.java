@@ -19,7 +19,7 @@ public class SmokeSurveyDto {
     private Boolean triedToQuit;      // Đã từng cố gắng cai chưa ?
     private String reasonsCantQuit;    // Lý do không thể cai
     private String healthStatus;      // Tình trạng sức khỏe hiện tại
-    private String dependencyLevel;   // Mức độ phụ thuộc
+    private Integer dependencyLevel;   // Mức độ phụ thuộc
     private String note;              // Ghi chú thêm
     private LocalDateTime createAt;
 }

@@ -29,7 +29,11 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found: " + userId
                 ));
-
+        // Tính toán mức độ phụ thuộc dựa trên thời gian hút thuốc và số điếu/ngày
+        int dependencyLevel = computeDependencyLevel(
+                request.getSmokeDuration(),    // số năm
+                request.getCigarettesPerDay()  // điếu/ngày
+        );
         Smoke_Survey entity = Smoke_Survey.builder()
                 // Không set .id(...) để JPA tự generate qua @GeneratedValue
                 .user(user)
@@ -39,12 +43,36 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
                 .triedToQuit(request.getTriedToQuit())
                 .reasonsCantQuit(request.getReasonsCantQuit())
                 .healthStatus(request.getHealthStatus())
-                .dependencyLevel(request.getDependencyLevel())
+                .dependencyLevel(dependencyLevel)
                 .note(request.getNote())
                 // Không set createAt, Hibernate tự xử lý @CreationTimestamp
                 .build();
         Smoke_Survey saved = repository.save(entity);
         return mapToDto(saved);
+    }
+    // Tính toán mức độ phụ thuộc dựa trên thời gian hút thuốc và số điếu/ngày
+    private int computeDependencyLevel(int smokeDurationYears, int cigarettesPerDay) {
+        int scoreCigs;
+        if (cigarettesPerDay <= 5)         scoreCigs = 1;
+        else if (cigarettesPerDay <= 10)   scoreCigs = 2;
+        else if (cigarettesPerDay <= 20)   scoreCigs = 3;
+        else if (cigarettesPerDay <= 30)   scoreCigs = 4;
+        else                                scoreCigs = 5;
+
+        int scoreYears;
+        if (smokeDurationYears < 1)        scoreYears = 0;
+        else if (smokeDurationYears <= 5)  scoreYears = 1;
+        else if (smokeDurationYears <= 10) scoreYears = 2;
+        else                                scoreYears = 3;
+
+        int totalScore = scoreCigs + scoreYears;  // tối đa 5+3=8, tối thiểu 1+0=1
+
+
+        if (totalScore <= 2)       return 1;
+        else if (totalScore <= 4)  return 2;
+        else if (totalScore <= 6)  return 3;
+        else if (totalScore <= 7)  return 4;
+        else                        return 5;
     }
 
     @Override

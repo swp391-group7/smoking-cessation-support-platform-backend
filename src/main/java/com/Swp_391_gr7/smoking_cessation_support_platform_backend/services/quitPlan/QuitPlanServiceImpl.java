@@ -92,6 +92,14 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         return plans.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public QuitPlanDto generatePlanFromSurvey(UUID userId, UUID smokeSurveyId) {
+        // This method is not implemented in the original code.
+        // Assuming it should create a plan based on a smoke survey.
+        throw new UnsupportedOperationException("Method not implemented yet");
+    }
+
+
     private QuitPlanDto mapToDto(Quit_Plan entity) {
         return QuitPlanDto.builder()
                 .id(entity.getId())

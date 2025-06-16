@@ -29,7 +29,7 @@ public class CreateSmokeSurveyRequest {
     private String healthStatus;
 
     @NotBlank
-    private String dependencyLevel;
+    private Integer dependencyLevel;
 
     private String note;
 }

@@ -29,7 +29,7 @@ public class UpdateSmokeSurveyRequest {
 
     private String healthStatus;
 
-    private String dependencyLevel;
+    private Integer dependencyLevel;
 
     private String note;
 }
