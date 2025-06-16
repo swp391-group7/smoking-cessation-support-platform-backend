@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,19 +28,20 @@ public class BadgesController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Badge created successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BlogPostDto.class))),
+                            schema = @Schema(implementation = BadgeDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
     @PostMapping("/create-badge")
-    public ResponseEntity<BadgeDto> create(@RequestBody BadgeCreationRequest dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(badgesService.create(dto));
+    public ResponseEntity<BadgeDto> create(@Valid @RequestBody BadgeCreationRequest req) {
+        BadgeDto dto = badgesService.create(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
     @Operation(summary = "Get all Badges")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Badges retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BlogPostDto.class)))
+                            schema = @Schema(implementation = BadgeDto.class)))
     })
     @GetMapping("/display-all")
     public ResponseEntity<List<BadgeDto>> getAll() {
@@ -49,8 +52,8 @@ public class BadgesController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Badge retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = BlogPostDto.class))),
-            @ApiResponse(responseCode = "404", description = "Blog not found", content = @Content)
+                            schema = @Schema(implementation = BadgeDto.class))),
+            @ApiResponse(responseCode = "404", description = "Badge not found", content = @Content)
     })
     @GetMapping("/{id}/display-badge")
     public ResponseEntity<BadgeDto> getById(@PathVariable UUID id) {

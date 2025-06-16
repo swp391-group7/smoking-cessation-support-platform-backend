@@ -3,18 +3,26 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.badg
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeCreationRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Badges;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.BadgesRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class BadgesServiceImpl implements BadgesService {
     private final BadgesRepository badgesRepository;
+    private final UserRepository userRepository;
 
     @Override
     public BadgeDto create(BadgeCreationRequest dto) {
@@ -48,6 +56,7 @@ public class BadgesServiceImpl implements BadgesService {
                 .badgeName(badge.getBadgeName())
                 .badgeDescription(badge.getBadgeDescription())
                 .badgeImageUrl(badge.getBadgeImageUrl())
+                .createdAt(badge.getCreatedAt())
                 .build();
     }
 }
