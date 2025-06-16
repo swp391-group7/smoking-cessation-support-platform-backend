@@ -1,0 +1,44 @@
+# Java CI with Maven and JDK 24 – Enhanced for Visual Test Reporting
+
+name: Java CI with Maven (JDK 24)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build & Test on JDK 24
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [24]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: ${{ matrix.java-version }}
+        cache: maven
+
+    - name: Build and run tests
+      run: mvn clean test --batch-mode
+
+    - name: Generate Surefire report
+      run: mvn surefire-report:report --batch-mode
+
+    - name: Upload test report artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: surefire-reports
+        path: target/site/surefire-report.html
+
+    # Optional: Update dependency graph for Dependabot alerts
+    - name: Update dependency graph
+      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
