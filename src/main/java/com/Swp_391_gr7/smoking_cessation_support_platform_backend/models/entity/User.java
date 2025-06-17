@@ -34,7 +34,7 @@ public class User {
     private String avtarPath;
     private String providerId;
 
-    //private Boolean PreStatus;
+    private Boolean PreStatus;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
