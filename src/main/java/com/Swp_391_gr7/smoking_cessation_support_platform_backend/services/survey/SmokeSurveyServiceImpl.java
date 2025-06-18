@@ -51,7 +51,8 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
         return mapToDto(saved);
     }
     // Tính toán mức độ phụ thuộc dựa trên thời gian hút thuốc và số điếu/ngày
-    private int computeDependencyLevel(int smokeDurationYears, int cigarettesPerDay) {
+
+     int computeDependencyLevel(int smokeDurationYears, int cigarettesPerDay) {
         int scoreCigs;
         if (cigarettesPerDay <= 5)         scoreCigs = 1;
         else if (cigarettesPerDay <= 10)   scoreCigs = 2;
