@@ -48,6 +48,7 @@ public class UserBadgeServiceImpl implements UserBadgeService {
                 .badgeName(userBadge.getBadge().getBadgeName())
                 .badgeDescription(userBadge.getBadge().getBadgeDescription())
                 .badgeImageUrl(userBadge.getBadge().getBadgeImageUrl())
+                .createdAt(userBadge.getBadge().getCreatedAt())
                 .build();
         return UserBadgeDto.builder()
                 .id(userBadge.getId())
