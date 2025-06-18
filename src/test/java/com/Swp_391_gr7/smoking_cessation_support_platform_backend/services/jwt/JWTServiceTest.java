@@ -11,7 +11,7 @@ import java.util.UUID;
 import static org.testng.Assert.*;
 
 @SpringBootTest
-public class JWTServiceTests {
+public class JWTServiceTest {
 
     private JWTService jwtService;
 

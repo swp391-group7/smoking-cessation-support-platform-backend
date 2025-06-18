@@ -11,12 +11,4 @@
 <!--        </packages>-->
 <!--    </test>-->
 <!--</suite>-->
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="AllTests" verbose="1">
-    <test name="AllTestClasses">
-        <classes>
-            <class name="com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt.JWTServiceTests"/>
-            <class name="com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey.SmokeSurveyServiceTests"/>
-        </classes>
-    </test>
-</suite>
+

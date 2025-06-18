@@ -27,7 +27,7 @@ import static org.testng.Assert.assertThrows;
 
 @SpringBootTest
 @Listeners(MockitoTestNGListener.class)
-public class SmokeSurveyServiceTests {
+public class SmokeSurveyServiceTest {
 
     @Mock
     private UserRepository userRepository;
