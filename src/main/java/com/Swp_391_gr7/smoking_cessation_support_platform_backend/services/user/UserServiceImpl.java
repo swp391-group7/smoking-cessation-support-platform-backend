@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return UserDto.builder()
                 .id(user.getId())
+                .password(user.getPassword())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
@@ -49,5 +52,24 @@ public class UserServiceImpl implements UserService {
                 .preStatus(user.getPreStatus())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> UserDto.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .password(user.getPassword())
+                        .email(user.getEmail())
+                        .providerId(user.getProviderId())
+                        .fullName(user.getFullName())
+                        .phoneNumber(user.getPhoneNumber())
+                        .dob(user.getDob())
+                        .avtarPath(user.getAvtarPath())
+                        .preStatus(user.getPreStatus())
+                        .createdAt(user.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

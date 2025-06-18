@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,11 +28,16 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/display-current-user")
     public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
         UUID userId = UUID.fromString(authentication.getName());
         UserDto userDto = userService.getUserInfo(userId);
         return ResponseEntity.ok(userDto);
+    }
+
+    @GetMapping("/display-all-users")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
 }

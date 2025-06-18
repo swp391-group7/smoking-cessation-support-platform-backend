@@ -35,7 +35,7 @@ public class User {
     private String avtarPath;
     private String providerId;
 
-    @ColumnDefault("false")
+//    @ColumnDefault("false")
     private Boolean PreStatus;
 
     @CreationTimestamp

@@ -5,9 +5,11 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.use
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
     User updateUser(UUID userId, UpdateuserRequest request);
     UserDto getUserInfo(UUID userId);
+    List<UserDto> getAllUsers();
 }

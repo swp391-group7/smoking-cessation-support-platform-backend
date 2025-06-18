@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 
 import java.util.UUID;
 
-public class ChatRoom {
+public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_chat_room_user"))
-    private User user;
+            foreignKey = @ForeignKey(name = "fk_message_user"))
+    private User sender;
+
 }
