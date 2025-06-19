@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/webjars/**",
+                                "/blogs/**", // Thêm đường dẫn cho blog
                                 "/error" // Thêm đường dẫn cho lỗi
 
                         ).permitAll()
