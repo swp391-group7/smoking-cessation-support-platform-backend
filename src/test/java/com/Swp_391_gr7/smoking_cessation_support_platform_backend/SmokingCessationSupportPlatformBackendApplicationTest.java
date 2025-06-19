@@ -29,16 +29,16 @@ public class SmokingCessationSupportPlatformBackendApplicationTest {
 //        System.out.println("chạy 1 lần duy nhất cho test class này");
 //    }
 
-//@BeforeMethod
-//public void beforeMethod() {
-//        System.out.println("chạy trước mỗi test method");
-//    }
-//
+@BeforeMethod
+public void beforeMethod() {
+        System.out.println("chạy trước mỗi test method");
+    }
 
-//@BeforeGroups({"unit"})
-//public void beforeUnitGroup() {
-//    System.out.println("chạy trước nhóm test 'unit'");
-//}
+
+@BeforeGroups({"unit"})
+public void beforeUnitGroup() {
+    System.out.println("chạy trước nhóm test 'unit'");
+}
 
         @Test
         public void contextLoads() {
@@ -74,10 +74,10 @@ public class SmokingCessationSupportPlatformBackendApplicationTest {
             System.out.println("integration");
         }
 
-//    @Test(retryAnalyzer = RetryFailedTest.class)
-//    public void flakyTest() {
-//        System.out.println("Running flaky test...");
-//        assert Math.random() > 0.7 : "❌ Test thất bại ngẫu nhiên";
-//    }
+    @Test(retryAnalyzer = RetryFailedTest.class)
+    public void flakyTest() {
+        System.out.println("Running flaky test...");
+        assert Math.random() > 0.7 : "❌ Test thất bại ngẫu nhiên";
+    }
 
     }
