@@ -91,6 +91,19 @@ public class BlogController {
         return ResponseEntity.ok(blogPostService.getAll());
     }
 
+
+    @Operation(summary  = "get 8 blog posts")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Blogs retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BlogPostDto.class)))
+    })
+    @GetMapping("/display-8-blog")
+    public ResponseEntity<List<BlogPostDto>> get8Blogs() {
+        List<BlogPostDto> allBlogs = blogPostService.getAll();
+        List<BlogPostDto> limitedBlogs = allBlogs.stream().limit(8).toList();
+        return ResponseEntity.ok(limitedBlogs);
+    }
     // Add this import
 
 
