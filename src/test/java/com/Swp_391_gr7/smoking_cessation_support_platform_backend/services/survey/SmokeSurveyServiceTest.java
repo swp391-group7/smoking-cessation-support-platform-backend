@@ -16,16 +16,16 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
+import java.io.*;
 import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertThrows;
 
-@SpringBootTest
+
 @Listeners(MockitoTestNGListener.class)
 public class SmokeSurveyServiceTest {
 
@@ -51,6 +51,26 @@ public class SmokeSurveyServiceTest {
                 {12, 40, 5},
         };
     }
+@DataProvider(name = "dependencyLevelsCsv")
+public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
+    List<Object[]> data = new ArrayList<>();
+    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("dependency_levels.csv");
+    if (inputStream == null) {
+        throw new FileNotFoundException("File not found in classpath: dependency_levels.csv");
+    }
+    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+    String line;
+    while ((line = reader.readLine()) != null) {
+        String[] parts = line.split(",");
+        int years = Integer.parseInt(parts[0].trim());
+        int cigs = Integer.parseInt(parts[1].trim());
+        int expected = Integer.parseInt(parts[2].trim());
+        data.add(new Object[]{years, cigs, expected});
+    }
+    reader.close();
+    return data.iterator();
+}
 
     @Test(dataProvider = "dependencyLevels")
     public void testComputeDependencyLevel(int years, int cigs, int expectedLevel) {

@@ -3,22 +3,34 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt;
 import io.jsonwebtoken.JwtException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.IRetryAnalyzer;
+import org.testng.ITestResult;
+import org.testng.annotations.*;
 
 import java.util.UUID;
 
 import static org.testng.Assert.*;
 
-@SpringBootTest
+
 public class JWTServiceTest {
+
+
 
     private JWTService jwtService;
 
-    // Giá trị giống config của bạn
     private final String secretKey = "Lh7K!v9@83ksn238JHJh23hjshJH23#asd";
     private final long expirationTime = 3_600_000L; // 1 giờ
 
+    @BeforeSuite
+    public void beforeSuite() {
+        // Thiết lập môi trường hoặc cấu hình cần thiết trước khi chạy các test
+        System.out.println("Bắt đầu chạy các test cho cả suite.");
+    }
+    @BeforeTest
+    public void beforeTest() {
+        // Thiết lập môi trường hoặc cấu hình cần thiết trước khi chạy các test trong test suite
+        System.out.println("Bắt đầu chạy các test cho test name All.");
+    }
     @BeforeMethod
     public void setUp() {
         jwtService = new JWTService();
