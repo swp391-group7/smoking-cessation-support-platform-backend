@@ -33,7 +33,9 @@ public class BlogController {
     })
     @PostMapping("/create-blog")
     public ResponseEntity<BlogPostDto> create(@Valid @RequestBody CreateBlogPostRequest req) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        UUID currentUserId = UUID.fromString(principal);
         BlogPostDto dto = blogPostService.create(currentUserId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
