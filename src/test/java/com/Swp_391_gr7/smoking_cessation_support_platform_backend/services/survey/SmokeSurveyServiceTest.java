@@ -2,15 +2,14 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.surv
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Smoke_Survey;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.SmokeSurveyRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.testng.MockitoTestNGListener;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
@@ -33,7 +32,7 @@ public class SmokeSurveyServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private SmokeSurveyRepository repository;
+    private UserSurveyRepository repository;
 
     @InjectMocks
     private SmokeSurveyServiceImpl surveyService;
@@ -94,7 +93,7 @@ public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
         req.setHealthStatus("Good");
         req.setNote("No notes");
 
-        Smoke_Survey saved = Smoke_Survey.builder()
+        User_Survey saved = User_Survey.builder()
                 .id(UUID.randomUUID())
                 .user(user)
                 .smokeDuration(5)
@@ -112,13 +111,13 @@ public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
         expectedDto.setId(saved.getId());
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(repository.save(any(Smoke_Survey.class))).thenReturn(saved);
+        when(repository.save(any(User_Survey.class))).thenReturn(saved);
 
         SmokeSurveyDto result = surveyService.createSurvey(userId, req);
 
         assertEquals(result.getId(), expectedDto.getId());
         Mockito.verify(userRepository).findById(userId);
-        Mockito.verify(repository).save(any(Smoke_Survey.class));
+        Mockito.verify(repository).save(any(User_Survey.class));
     }
 
     @Test

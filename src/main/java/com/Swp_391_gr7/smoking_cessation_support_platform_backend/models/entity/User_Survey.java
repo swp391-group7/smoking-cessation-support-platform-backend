@@ -16,8 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="smoke_survey")
-public class Smoke_Survey {
+@Table(name = "user_survey")
+public class User_Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
@@ -43,11 +43,33 @@ public class Smoke_Survey {
     @Column(name = "tried_to_quit", nullable = false)
     private Boolean triedToQuit;
 
-    @Column(name = "reasons_cant_quit", columnDefinition = "TEXT")
-    private String reasonsCantQuit;
-
     @Column(name = "health_status", length = 255)
     private String healthStatus;
+
+    // WHO survey answers a1–a8
+    @Column(name = "a1", columnDefinition = "TEXT")
+    private String a1;
+
+    @Column(name = "a2", columnDefinition = "TEXT")
+    private String a2;
+
+    @Column(name = "a3", columnDefinition = "TEXT")
+    private String a3;
+
+    @Column(name = "a4", columnDefinition = "TEXT")
+    private String a4;
+
+    @Column(name = "a5", columnDefinition = "TEXT")
+    private String a5;
+
+    @Column(name = "a6", columnDefinition = "TEXT")
+    private String a6;
+
+    @Column(name = "a7", columnDefinition = "TEXT")
+    private String a7;
+
+    @Column(name = "a8", columnDefinition = "TEXT")
+    private String a8;
 
     @Column(name = "dependency_level", nullable = false)
     @Min(1)
@@ -60,5 +82,4 @@ public class Smoke_Survey {
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
-
 }

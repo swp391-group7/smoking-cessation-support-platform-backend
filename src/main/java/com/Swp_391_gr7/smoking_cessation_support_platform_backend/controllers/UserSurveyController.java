@@ -20,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/surveys")
 @RequiredArgsConstructor
-public class SmokeSurveyController {
+public class UserSurveyController {
 
     private final SmokeSurveyService surveyService;
 
