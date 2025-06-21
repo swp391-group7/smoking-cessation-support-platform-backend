@@ -1,7 +1,7 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey;
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.CreateUserSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
@@ -35,7 +35,7 @@ public class SmokeSurveyServiceTest {
     private UserSurveyRepository repository;
 
     @InjectMocks
-    private SmokeSurveyServiceImpl surveyService;
+    private UserSurveyServiceImpl surveyService;
 
     @DataProvider(name = "dependencyLevels")
     public Object[][] dependencyLevels() {
@@ -84,7 +84,7 @@ public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
         User user = new User();
         user.setId(userId);
 
-        CreateSmokeSurveyRequest req = new CreateSmokeSurveyRequest();
+        CreateUserSurveyRequest req = new CreateUserSurveyRequest();
         req.setSmokeDuration(5);
         req.setCigarettesPerDay(15);
         req.setPriceEach(new BigDecimal(10));
@@ -107,13 +107,13 @@ public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
                 .build();
 
 
-        SmokeSurveyDto expectedDto = new SmokeSurveyDto();
+        UserSurveyDto expectedDto = new UserSurveyDto();
         expectedDto.setId(saved.getId());
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(repository.save(any(User_Survey.class))).thenReturn(saved);
 
-        SmokeSurveyDto result = surveyService.createSurvey(userId, req);
+        UserSurveyDto result = surveyService.createSurvey(userId, req);
 
         assertEquals(result.getId(), expectedDto.getId());
         Mockito.verify(userRepository).findById(userId);
@@ -123,7 +123,7 @@ public Iterator<Object[]> dependencyLevelsFromCsv() throws IOException {
     @Test
     public void testCreateSurveyUserNotFound() {
         UUID userId = UUID.randomUUID();
-        CreateSmokeSurveyRequest req = new CreateSmokeSurveyRequest();
+        CreateUserSurveyRequest req = new CreateUserSurveyRequest();
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 

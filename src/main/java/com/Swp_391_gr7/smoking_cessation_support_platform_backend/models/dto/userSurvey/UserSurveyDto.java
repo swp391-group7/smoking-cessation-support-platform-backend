@@ -1,4 +1,4 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SmokeSurveyDto {
+public class UserSurveyDto {
     private UUID id;                  // UUID của survey (response only)
     private UUID userId;              // FK tới User
     private Integer smokeDuration;    // Thời gian hút thuốc (năm)

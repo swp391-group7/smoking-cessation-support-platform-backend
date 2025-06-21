@@ -1,10 +1,10 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSmokeSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.CreateUserSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UpdateUserSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class SmokeSurveyServiceImpl implements SmokeSurveyService {
+public class UserSurveyServiceImpl implements UseSurveyService {
 
     private final UserSurveyRepository repository;
     private final UserRepository userRepository;
 
     @Override
-    public SmokeSurveyDto createSurvey(UUID userId, CreateSmokeSurveyRequest request) {
+    public UserSurveyDto createSurvey(UUID userId, CreateUserSurveyRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found: " + userId
@@ -55,7 +55,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
     }
 
     @Override
-    public SmokeSurveyDto getSurvey(UUID userId) {
+    public UserSurveyDto getSurvey(UUID userId) {
         User_Survey entity = repository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -65,7 +65,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
     }
 
     @Override
-    public SmokeSurveyDto updateSurvey(UUID userId, UpdateSmokeSurveyRequest request) {
+    public UserSurveyDto updateSurvey(UUID userId, UpdateUserSurveyRequest request) {
         User_Survey entity = repository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -112,7 +112,7 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
         repository.delete(entity);
     }
 
-    public SmokeSurveyDto getSurveyById(UUID surveyId) {
+    public UserSurveyDto getSurveyById(UUID surveyId) {
         User_Survey entity = repository.findById(surveyId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Survey not found for id: " + surveyId
@@ -120,8 +120,8 @@ public class SmokeSurveyServiceImpl implements SmokeSurveyService {
         return mapToDto(entity);
     }
 
-    private SmokeSurveyDto mapToDto(User_Survey e) {
-        return SmokeSurveyDto.builder()
+    private UserSurveyDto mapToDto(User_Survey e) {
+        return UserSurveyDto.builder()
                 .id(e.getId())
                 .userId(e.getUser().getId())
                 .smokeDuration(e.getSmokeDuration())

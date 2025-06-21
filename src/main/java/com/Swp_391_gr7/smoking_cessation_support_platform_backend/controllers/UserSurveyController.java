@@ -1,9 +1,9 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SmokeSurveyDto;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSmokeSurveyRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey.SmokeSurveyService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.CreateUserSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UpdateUserSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UseSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserSurveyController {
 
-    private final SmokeSurveyService surveyService;
+    private final UseSurveyService surveyService;
 
     @Operation(
             summary = "Create a new Smoke Survey",
@@ -31,19 +31,19 @@ public class UserSurveyController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Survey created successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SmokeSurveyDto.class))),
+                            schema = @Schema(implementation = UserSurveyDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input data",
                     content = @Content)
     })
     @PostMapping("/create-survey")
-    public ResponseEntity<SmokeSurveyDto> createSurvey(
-            @Valid @RequestBody CreateSmokeSurveyRequest req) {
+    public ResponseEntity<UserSurveyDto> createSurvey(
+            @Valid @RequestBody CreateUserSurveyRequest req) {
 
         // Lấy userId trực tiếp từ JWT (do JwtAuthenticationFilter gán vào SecurityContext)
         UUID currentUserId = (UUID) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        SmokeSurveyDto dto = surveyService.createSurvey(currentUserId, req);
+        UserSurveyDto dto = surveyService.createSurvey(currentUserId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -54,16 +54,16 @@ public class UserSurveyController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SmokeSurveyDto.class))),
+                            schema = @Schema(implementation = UserSurveyDto.class))),
             @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
                     content = @Content)
     })
     @GetMapping("/get-survey")
-    public ResponseEntity<SmokeSurveyDto> getSurvey() {
+    public ResponseEntity<UserSurveyDto> getSurvey() {
         UUID currentUserId = (UUID) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        SmokeSurveyDto dto = surveyService.getSurvey(currentUserId);
+        UserSurveyDto dto = surveyService.getSurvey(currentUserId);
         return ResponseEntity.ok(dto);
     }
 
@@ -74,20 +74,20 @@ public class UserSurveyController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Survey updated successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SmokeSurveyDto.class))),
+                            schema = @Schema(implementation = UserSurveyDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid update data",
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
                     content = @Content)
     })
     @PutMapping("/update-survey")
-    public ResponseEntity<SmokeSurveyDto> updateSurvey(
-            @Valid @RequestBody UpdateSmokeSurveyRequest req) {
+    public ResponseEntity<UserSurveyDto> updateSurvey(
+            @Valid @RequestBody UpdateUserSurveyRequest req) {
 
         UUID currentUserId = (UUID) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
-        SmokeSurveyDto dto = surveyService.updateSurvey(currentUserId, req);
+        UserSurveyDto dto = surveyService.updateSurvey(currentUserId, req);
         return ResponseEntity.ok(dto);
     }
 

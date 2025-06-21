@@ -1,27 +1,28 @@
-package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey;
+package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey;
 
 import lombok.*;
 
 import java.math.BigDecimal;
 import jakarta.validation.constraints.*;
 
+/**
+ * Dùng khi cập nhật survey (cho phép cập nhật hầu hết các trường)
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateSmokeSurveyRequest {
+public class UpdateUserSurveyRequest {
+
     @NotNull
     private Integer smokeDuration;
 
-    @NotNull
     @Min(0)
     private Integer cigarettesPerDay;
 
-    @NotNull
     @DecimalMin("0.0")
     private BigDecimal priceEach;
 
-    @NotNull
     private Boolean triedToQuit;
 
 
@@ -35,7 +36,8 @@ public class CreateSmokeSurveyRequest {
     private String a6;
     private String a7;
     private String a8;
-    @NotBlank
+
+
     private Integer dependencyLevel;
 
     private String note;
