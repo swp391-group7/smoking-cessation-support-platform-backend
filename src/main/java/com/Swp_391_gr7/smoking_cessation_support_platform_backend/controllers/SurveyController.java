@@ -4,6 +4,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.sur
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey.SurveyService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,100 +25,68 @@ import java.util.UUID;
 public class SurveyController {
 
     private final SurveyService surveyService;
+    private final UserService userService;
 
-    @Operation(
-            summary = "Create a new Survey",
-            description = "Tạo mới một Survey cho user hiện tại và trả về SurveyDto vừa tạo."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Survey created successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SurveyDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
-    })
+    private ResponseEntity<Object> forbiddenResponse() {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Bạn không phải là admin");
+    }
+
+    private boolean isNotAdmin(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return !"admin".equalsIgnoreCase(userService.getUserById(userId).getRoleName());
+    }
+
     @PostMapping("/create-survey")
-    public ResponseEntity<SurveyDto> createSurvey(
-            @Valid @RequestBody CreateSurveyRequest req
+    public ResponseEntity<?> createSurvey(
+            @Valid @RequestBody CreateSurveyRequest req,
+            Authentication authentication
     ) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        if (isNotAdmin(authentication)) return forbiddenResponse();
+
+        UUID currentUserId = UUID.fromString(authentication.getName());
         SurveyDto dto = surveyService.createSurvey(currentUserId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @Operation(
-            summary = "Get Survey by User",
-            description = "Lấy Survey của user hiện tại."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SurveyDto.class))),
-            @ApiResponse(responseCode = "404", description = "Survey not found", content = @Content)
-    })
     @GetMapping("/get-survey")
-    public ResponseEntity<SurveyDto> getSurvey() {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+    public ResponseEntity<?> getSurvey(Authentication authentication) {
+        if (isNotAdmin(authentication)) return forbiddenResponse();
+
+        UUID currentUserId = UUID.fromString(authentication.getName());
         SurveyDto dto = surveyService.getSurvey(currentUserId);
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(
-            summary = "Update Survey",
-            description = "Cập nhật Survey của user hiện tại."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Survey updated successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SurveyDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid update data", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Survey not found", content = @Content)
-    })
     @PutMapping("/update-survey")
-    public ResponseEntity<SurveyDto> updateSurvey(
-            @Valid @RequestBody UpdateSurveyRequest req
+    public ResponseEntity<?> updateSurvey(
+            @Valid @RequestBody UpdateSurveyRequest req,
+            Authentication authentication
     ) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        if (isNotAdmin(authentication)) return forbiddenResponse();
+
+        UUID currentUserId = UUID.fromString(authentication.getName());
         SurveyDto dto = surveyService.updateSurvey(currentUserId, req);
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(
-            summary = "Delete Survey",
-            description = "Xóa Survey của user hiện tại."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Survey deleted successfully", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Survey not found", content = @Content)
-    })
     @DeleteMapping("/delete-survey")
-    public ResponseEntity<Void> deleteSurvey() {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+    public ResponseEntity<?> deleteSurvey(Authentication authentication) {
+        if (isNotAdmin(authentication)) return forbiddenResponse();
+
+        UUID currentUserId = UUID.fromString(authentication.getName());
         surveyService.deleteSurvey(currentUserId);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(
-            summary = "Get Survey by ID",
-            description = "Lấy Survey theo surveyId (admin hoặc use-case khác)."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = SurveyDto.class))),
-            @ApiResponse(responseCode = "404", description = "Survey not found", content = @Content)
-    })
     @GetMapping("/{surveyId}")
-    public ResponseEntity<SurveyDto> getSurveyById(
-            @PathVariable UUID surveyId
+    public ResponseEntity<?> getSurveyById(
+            @PathVariable UUID surveyId,
+            Authentication authentication
     ) {
+        if (isNotAdmin(authentication)) return forbiddenResponse();
+
         SurveyDto dto = surveyService.getSurveyById(surveyId);
         return ResponseEntity.ok(dto);
     }
