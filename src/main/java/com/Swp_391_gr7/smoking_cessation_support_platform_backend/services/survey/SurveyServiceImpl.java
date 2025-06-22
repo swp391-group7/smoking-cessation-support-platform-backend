@@ -33,6 +33,7 @@ public class SurveyServiceImpl implements SurveyService {
         Survey entity = Survey.builder()
                 .user(user)
                 .typeSurvey(request.getType_survey())
+                .createAt(request.getCreateAt())
                 .build();
 
         Survey saved = surveyRepository.save(entity);

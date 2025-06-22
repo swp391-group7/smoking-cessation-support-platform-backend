@@ -21,7 +21,7 @@ public class Question {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
+    @JoinColumn(name = "survey_id", updatable = false, nullable = false, columnDefinition = "UUID")
     private Survey survey;
 
     @Column(name = "content", nullable = false)
