@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webjars/**",
                                 "/blogs/display-8-blog",
+                                "/roles/**",
                                 "/error" // Thêm đường dẫn cho lỗi
 
                         ).permitAll()

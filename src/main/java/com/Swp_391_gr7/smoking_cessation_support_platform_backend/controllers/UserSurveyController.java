@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/surveys")
+@RequestMapping("/user-surveys")
 @RequiredArgsConstructor
 public class UserSurveyController {
 

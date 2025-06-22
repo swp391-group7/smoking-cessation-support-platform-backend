@@ -22,6 +22,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.EAGER) // hoặc LAZY tùy bạn
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+
     @Column(nullable = false, unique = true)
     private String username;
 

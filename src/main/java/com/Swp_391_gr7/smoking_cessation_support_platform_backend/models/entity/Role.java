@@ -24,9 +24,7 @@ import java.util.UUID;
         //@ColumnDefault("Member")
         private String role;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_role_user"))
-        private User user;
+
     }
 
 

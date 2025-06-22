@@ -2,7 +2,9 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.auth.LoginRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.auth.SigninRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Role;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.RoleRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.jwt.JWTService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,9 +24,11 @@ import java.util.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private static final String ERROR_MESSAGE = "Invalid Username or Password";
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository; // ✅ Thêm RoleRepository
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,7 +47,7 @@ public class AuthController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Username already existed",
+                    description = "Username already existed or role missing",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE)
             )
     })
@@ -52,8 +56,10 @@ public class AuthController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Map<String, String>> signup(
-            @RequestBody SigninRequest signinRequest) {
+    public ResponseEntity<Map<String, String>> signup(@RequestBody SigninRequest signinRequest) {
+        // Tìm role "USER"
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new RuntimeException("Default role 'USER' not found"));
 
         String hashedPassword = passwordEncoder.encode(signinRequest.getPassword());
         User user = User.builder()
@@ -61,6 +67,7 @@ public class AuthController {
                 .password(hashedPassword)
                 .fullName(signinRequest.getFullName())
                 .email(signinRequest.getEmail())
+                .role(userRole) // ✅ Gán role vào đây
                 .build();
 
         try {
@@ -99,30 +106,22 @@ public class AuthController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Map<String, Object>> login(
-            @RequestBody LoginRequest loginRequest) {
-
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository
                 .findByUsernameContainsIgnoreCase(loginRequest.getUsername());
-        if (userOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(401)
-                    .body(Collections.singletonMap("error", ERROR_MESSAGE));
+
+        if (userOptional.isEmpty() || !passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
+            return ResponseEntity.status(401).body(Collections.singletonMap("error", ERROR_MESSAGE));
         }
 
         User user = userOptional.get();
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity
-                    .status(401)
-                    .body(Collections.singletonMap("error", ERROR_MESSAGE));
-        }
-
         String token = jwtService.generateToken(user.getId());
+
         Map<String, Object> userPayload = new HashMap<>();
         userPayload.put("id", user.getId());
         userPayload.put("full_name", user.getFullName());
         userPayload.put("avatar_path", user.getAvtarPath());
-        // add more fields if needed
+        userPayload.put("role", user.getRole().getRole()); // ✅ Trả role luôn nếu cần
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", token);
