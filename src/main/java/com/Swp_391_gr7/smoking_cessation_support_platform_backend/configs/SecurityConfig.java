@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/blogs/display-8-blog",
                                 "/roles/**",
+//                                "/users/**", // Thêm đường dẫn cho user
                                 "/error" // Thêm đường dẫn cho lỗi
 
                         ).permitAll()

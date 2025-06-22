@@ -28,7 +28,7 @@ public class AuthController {
     private static final String ERROR_MESSAGE = "Invalid Username or Password";
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository; // ✅ Thêm RoleRepository
+    private final RoleRepository roleRepository;
     private final JWTService jwtService;
     private final PasswordEncoder passwordEncoder;
 
@@ -57,25 +57,25 @@ public class AuthController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Map<String, String>> signup(@RequestBody SigninRequest signinRequest) {
-        // Tìm role "USER"
-        Role userRole = roleRepository.findByRole("user")
-                .orElseThrow(() -> new RuntimeException("Default role 'USER' not found"));
+        if (userRepository.findByUsernameIgnoreCase(signinRequest.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Username already existed"));
+        }
 
+        // ✅ Tìm role 'user' từ DB (phải được seed trước)
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new RuntimeException("Default role 'user' not found"));
+
+        // ✅ Tạo user
         String hashedPassword = passwordEncoder.encode(signinRequest.getPassword());
         User user = User.builder()
                 .username(signinRequest.getUsername())
                 .password(hashedPassword)
                 .fullName(signinRequest.getFullName())
                 .email(signinRequest.getEmail())
-                .role(userRole) // ✅ Gán role vào đây
+                .role(userRole)
                 .build();
 
-        try {
-            user = userRepository.save(user);
-        } catch (Exception e) {
-            Map<String, String> error = Collections.singletonMap("error", "Username already existed");
-            return ResponseEntity.badRequest().body(error);
-        }
+        user = userRepository.save(user);
 
         String token = jwtService.generateToken(user.getId());
         Map<String, String> responseBody = Collections.singletonMap("token", token);
@@ -108,20 +108,25 @@ public class AuthController {
     )
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
         Optional<User> userOptional = userRepository
-                .findByUsernameContainsIgnoreCase(loginRequest.getUsername());
+                .findByUsernameIgnoreCase(loginRequest.getUsername());
 
-        if (userOptional.isEmpty() || !passwordEncoder.matches(loginRequest.getPassword(), userOptional.get().getPassword())) {
+        if (userOptional.isEmpty()) {
             return ResponseEntity.status(401).body(Collections.singletonMap("error", ERROR_MESSAGE));
         }
 
         User user = userOptional.get();
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body(Collections.singletonMap("error", ERROR_MESSAGE));
+        }
+
         String token = jwtService.generateToken(user.getId());
 
         Map<String, Object> userPayload = new HashMap<>();
         userPayload.put("id", user.getId());
         userPayload.put("full_name", user.getFullName());
         userPayload.put("avatar_path", user.getAvtarPath());
-        userPayload.put("role", user.getRole().getRole()); // ✅ Trả role luôn nếu cần
+        userPayload.put("role", user.getRole() != null ? user.getRole().getRole() : null);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("token", token);

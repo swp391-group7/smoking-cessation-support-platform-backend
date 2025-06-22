@@ -1,5 +1,6 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,4 +14,6 @@ public class UpdateUserRequest {
     private String phoneNumber;
     private LocalDate dob;
     private String avtarPath;
+
+    private String roleName;
 }
