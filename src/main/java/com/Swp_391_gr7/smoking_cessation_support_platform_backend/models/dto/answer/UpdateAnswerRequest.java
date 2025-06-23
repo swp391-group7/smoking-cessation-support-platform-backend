@@ -1,12 +1,11 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.answer;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UpdateAnswerRequest {
     private String answerText;
