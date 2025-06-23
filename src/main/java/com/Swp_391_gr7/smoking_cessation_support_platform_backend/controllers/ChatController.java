@@ -4,6 +4,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoomMember;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Message;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.ChatMessageDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.ChatRoomMemberRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.ChatRoomRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.MessageRepository;
@@ -88,13 +89,5 @@ public class ChatController {
     @DeleteMapping("/rooms/{roomId}/members/{userId}")
     public void removeMember(@PathVariable UUID roomId, @PathVariable UUID userId) {
         chatRoomMemberRepository.deleteByChatRoomIdAndUserId(roomId, userId);
-    }
-
-    // DTO for WebSocket message
-    @Data
-    public static class ChatMessageDto {
-        private UUID chatRoomId;
-        private UUID senderId;
-        private String content;
     }
 }

@@ -17,12 +17,17 @@ import java.util.UUID;
 @Builder
 @Table(name = "chat_room_members")
 public class ChatRoomMember {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
+    private UUID id;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "chat_room_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_chat_room_member_chat_room"))
     private ChatRoom chatRoom;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_chat_room_user"))
     private User user;
