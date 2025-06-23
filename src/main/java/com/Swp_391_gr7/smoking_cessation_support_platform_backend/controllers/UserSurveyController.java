@@ -20,6 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user-surveys")
 @RequiredArgsConstructor
+@CrossOrigin(originPatterns = "*")
 public class UserSurveyController {
 
     private final UseSurveyService surveyService;
