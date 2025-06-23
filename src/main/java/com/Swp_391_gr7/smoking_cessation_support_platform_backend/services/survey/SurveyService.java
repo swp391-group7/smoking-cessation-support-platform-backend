@@ -1,6 +1,7 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SurveyDetailDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSurveyRequest;
 
@@ -14,4 +15,6 @@ public interface SurveyService {
 
     void deleteSurvey(UUID userId);
     SurveyDto getSurveyById(UUID surveyId);
+    SurveyDetailDto getSurveyDetail(UUID surveyId);
+
 }

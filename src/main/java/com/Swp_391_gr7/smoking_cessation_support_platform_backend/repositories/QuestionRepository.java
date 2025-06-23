@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
     // Lấy tất cả câu hỏi thuộc về một survey (dựa trên id survey)
-    List<Question> findBySurvey_Id(UUID surveyId);
+    List<Question> findBySurveyId(UUID surveyId);
 
     // Đếm số câu hỏi trong một survey
     long countBySurvey_Id(UUID surveyId);

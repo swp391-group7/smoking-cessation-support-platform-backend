@@ -48,6 +48,7 @@ public class SecurityConfig {
                                 "/blogs/display-8-blog",
 //                                "/roles/**",
 //                                "/users/**", // Thêm đường dẫn cho user
+                                "/surveys/{surveyId}/detail**", // Thêm đường dẫn cho survey
                                 "/error" // Thêm đường dẫn cho lỗi
 
                         ).permitAll()

@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.CreateSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SurveyDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.SurveyDetailDto; // ✥ import thêm
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.survey.UpdateSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey.SurveyService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -89,5 +89,18 @@ public class SurveyController {
 
         SurveyDto dto = surveyService.getSurveyById(surveyId);
         return ResponseEntity.ok(dto);
+    }
+
+    // Endpoint chi tiết Survey (bỏ qua kiểm tra role admin)
+    @Operation(summary = "Lấy chi tiết survey, bao gồm câu hỏi và đáp án (bỏ qua kiểm tra admin)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Trả về chi tiết survey",
+                    content = @Content(schema = @Schema(implementation = SurveyDetailDto.class))),
+            @ApiResponse(responseCode = "404", description = "Survey không tìm thấy")
+    })
+    @GetMapping("/{surveyId}/detail")
+    public ResponseEntity<?> getSurveyDetail(@PathVariable UUID surveyId) {
+        SurveyDetailDto detailDto = surveyService.getSurveyDetail(surveyId);
+        return ResponseEntity.ok(detailDto);
     }
 }

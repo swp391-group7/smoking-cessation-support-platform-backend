@@ -72,7 +72,7 @@ public class AnswerServiceImpl implements AnswerService {
     // list all answers for a question
     @Override
     public List<AnswerDto> getAnswersByQuestionId(UUID questionId) {
-        return answerRepository.findByQuestion_Id(questionId)
+        return answerRepository.findByQuestionId(questionId)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
