@@ -1,6 +1,7 @@
 // ChatRoomController.java
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.CreateChatRoomRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoom;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.chatroom.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class ChatRoomController {
     private final ChatRoomService service;
 
     @PostMapping
-    public ChatRoom create(@RequestBody ChatRoom room) {
+    public ChatRoom create(@RequestBody CreateChatRoomRequest room) {
         return service.createRoom(room);
     }
 

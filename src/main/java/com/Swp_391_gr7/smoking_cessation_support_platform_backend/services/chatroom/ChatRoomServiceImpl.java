@@ -1,6 +1,7 @@
 // ChatRoomServiceImpl.java
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.chatroom;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.CreateChatRoomRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoom;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepository repo;
 
     @Override
-    public ChatRoom createRoom(ChatRoom room) {
-        return repo.save(room);
+    public ChatRoom createRoom(CreateChatRoomRequest room) {
+        ChatRoom entity = ChatRoom.builder()
+                .name(room.getName())
+                .type(room.getType())
+                .build();
+        return repo.save(entity);
     }
 
     @Override
