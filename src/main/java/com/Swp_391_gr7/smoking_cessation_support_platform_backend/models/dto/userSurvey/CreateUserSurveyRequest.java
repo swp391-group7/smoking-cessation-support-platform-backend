@@ -11,7 +11,7 @@ import jakarta.validation.constraints.*;
 @Builder
 public class CreateUserSurveyRequest {
     @NotNull
-    private Integer smokeDuration;
+    private String smokeDuration;
 
     @NotNull
     @Min(0)

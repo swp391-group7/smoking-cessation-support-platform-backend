@@ -13,7 +13,7 @@ import java.util.UUID;
 public class UserSurveyDto {
     private UUID id;                  // UUID của survey (response only)
     private UUID userId;              // FK tới User
-    private Integer smokeDuration;    // Thời gian hút thuốc (năm)
+    private String smokeDuration;    // Thời gian hút thuốc (năm)
     private Integer cigarettesPerDay; // Số điếu/ngày
     private BigDecimal priceEach;     // Giá tiền mỗi điếu
     private Boolean triedToQuit;      // Đã từng cố gắng cai chưa ?

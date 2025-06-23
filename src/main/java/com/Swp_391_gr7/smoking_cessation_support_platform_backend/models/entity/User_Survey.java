@@ -32,7 +32,7 @@ public class User_Survey {
     private User user;
 
     @Column(name = "smoke_duration", nullable = false)
-    private Integer smokeDuration;
+    private String smokeDuration;
 
     @Column(name = "cigarettes_per_day", nullable = false)
     private Integer cigarettesPerDay;

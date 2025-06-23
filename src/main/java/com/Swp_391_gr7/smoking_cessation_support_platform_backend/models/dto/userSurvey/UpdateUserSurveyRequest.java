@@ -15,7 +15,7 @@ import jakarta.validation.constraints.*;
 public class UpdateUserSurveyRequest {
 
     @NotNull
-    private Integer smokeDuration;
+    private String smokeDuration;
 
     @Min(0)
     private Integer cigarettesPerDay;
