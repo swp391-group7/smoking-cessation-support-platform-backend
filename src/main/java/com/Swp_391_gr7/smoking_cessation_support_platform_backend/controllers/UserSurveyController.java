@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -110,5 +112,49 @@ public class UserSurveyController {
         surveyService.deleteSurvey(currentUserId);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(
+            summary = "Get First Smoke Survey of Current User",
+            description = "Lấy khảo sát hút thuốc đầu tiên của user hiện tại (theo thời gian tạo)."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserSurveyDto.class))),
+            @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
+                    content = @Content)
+    })
+    @GetMapping("/get-first-survey")
+    public ResponseEntity<UserSurveyDto> getFirstSurvey() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        UserSurveyDto dto = surveyService.getFirstSurveyOfUser(currentUserId);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(
+            summary = "Get All Smoke Surveys of Current User",
+            description = "Lấy toàn bộ các khảo sát hút thuốc của user hiện tại."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Surveys retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserSurveyDto.class))),
+            @ApiResponse(responseCode = "404", description = "No surveys found for given userId",
+                    content = @Content)
+    })
+    @GetMapping("/get-all-surveys")
+    public ResponseEntity<List<UserSurveyDto>> getAllSurveys() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        List<UserSurveyDto> dtoList = surveyService.getAllSurveyOfUser(currentUserId);
+        return ResponseEntity.ok(dtoList);
+    }
+
+
+
+
 }
 

@@ -5,6 +5,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.use
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UpdateUserSurveyRequest;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UseSurveyService {
@@ -30,4 +31,9 @@ public interface UseSurveyService {
     void deleteSurvey(UUID userId);
 
     UserSurveyDto getSurveyById(UUID surveyId);
+
+
+    UserSurveyDto getFirstSurveyOfUser(UUID userId);
+
+    List<UserSurveyDto>getAllSurveyOfUser(UUID userId);
 }

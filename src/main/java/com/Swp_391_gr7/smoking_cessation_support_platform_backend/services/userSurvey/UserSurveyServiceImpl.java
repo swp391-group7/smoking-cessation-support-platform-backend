@@ -111,7 +111,7 @@ public class UserSurveyServiceImpl implements UseSurveyService {
                 ));
         repository.delete(entity);
     }
-
+    @Override
     public UserSurveyDto getSurveyById(UUID surveyId) {
         User_Survey entity = repository.findById(surveyId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -119,6 +119,25 @@ public class UserSurveyServiceImpl implements UseSurveyService {
                 ));
         return mapToDto(entity);
     }
+
+
+    @Override
+    public UserSurveyDto getFirstSurveyOfUser(UUID userId) {
+        User_Survey entity = repository.findFirstByUserIdOrderByCreateAtDesc(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No survey found for userId: " + userId
+                ));
+        return mapToDto(entity);
+    }
+    @Override
+    public java.util.List<UserSurveyDto> getAllSurveyOfUser(UUID userId) {
+        java.util.List<User_Survey> entities = repository.findAllByUserId(userId);
+        if (entities.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No surveys found for userId: " + userId);
+        }
+        return entities.stream().map(this::mapToDto).toList();
+    }
+
 
     private UserSurveyDto mapToDto(User_Survey e) {
         return UserSurveyDto.builder()
