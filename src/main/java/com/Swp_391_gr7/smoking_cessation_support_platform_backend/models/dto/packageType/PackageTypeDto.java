@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -16,5 +17,5 @@ public class PackageTypeDto {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    private LocalDate createAt;
+    private LocalDateTime createAt;
 }

@@ -14,8 +14,9 @@ import java.util.UUID;
 public class MembershipPackageDto {
     private UUID id;
     private UUID userId;
-    private UUID packageId;
+    private UUID packagetTypeId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isActive;
+    private LocalDateTime createdAt;
 }
