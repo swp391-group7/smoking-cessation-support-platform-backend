@@ -15,6 +15,7 @@ public class MembershipPackageDto {
     private UUID id;
     private UUID userId;
     private UUID packagetTypeId;
+    private String packageTypeName;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isActive;

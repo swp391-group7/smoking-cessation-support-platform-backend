@@ -34,13 +34,21 @@ public class MembershipPackageController {
             @ApiResponse(responseCode = "400", description = "Dữ liệu không hợp lệ", content = @Content)
     })
     @PostMapping("/create")
-    public ResponseEntity<MembershipPackageDto> createPackage(@Valid @RequestBody CreateMembershipPackageRequest request) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-        MembershipPackageDto dto = membershipPackageService.create(currentUserId, request.getPackageTypeId(), request);
+    public ResponseEntity<MembershipPackageDto> createPackage(
+            @Valid @RequestBody CreateMembershipPackageRequest request
+    ) {
+        UUID currentUserId = (UUID) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+
+        // Lấy luôn packageTypeId từ request
+        MembershipPackageDto dto = membershipPackageService.create(
+                currentUserId,
+                request.getPackageTypeId(),
+                request
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+
 
     @Operation(summary = "Cập nhật gói membership của user hiện tại")
     @ApiResponses({

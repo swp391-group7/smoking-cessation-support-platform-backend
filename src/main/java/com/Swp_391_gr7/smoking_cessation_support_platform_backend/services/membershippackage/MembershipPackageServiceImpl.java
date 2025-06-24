@@ -99,6 +99,7 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
                 .id(e.getId())
                 .userId(e.getUser().getId())
                 .packagetTypeId(e.getPackageType().getId())
+                .packageTypeName(e.getPackageType().getName()) // <— lấy tên từ Package_Types
                 .startDate(e.getStartDate())
                 .endDate(e.getEndDate())
                 .isActive(e.isActive())               // <— đúng getter của Entity
