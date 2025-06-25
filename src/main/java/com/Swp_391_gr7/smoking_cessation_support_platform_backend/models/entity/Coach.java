@@ -4,7 +4,6 @@ import lombok.*;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -17,17 +16,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Check(constraints = "avg_rating BETWEEN 0 AND 5")  // Thêm constraint riêng
+@Check(constraints = "avg_rating BETWEEN 0 AND 5")
 public class Coach {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "user_id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @MapsId // Gán user.id vào khóa chính của Coach
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_coach_user"))
     private User user;
 
@@ -38,7 +35,7 @@ public class Coach {
     private String qualification;
 
     @Column(name = "avg_rating", nullable = false, precision = 2, scale = 1)
-    @ColumnDefault("0.0")  // Đặt default riêng
+    @ColumnDefault("0.0")
     private BigDecimal avgRating;
 
     @CreationTimestamp
