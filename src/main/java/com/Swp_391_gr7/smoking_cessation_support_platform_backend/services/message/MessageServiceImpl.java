@@ -1,8 +1,12 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.message;
 
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.ChatMessageDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.SendMessageRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Message;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.MessageRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository repo;
+    private final UserRepository userRepository;
 
     @Override
     public Message save(Message message) {
@@ -28,5 +33,29 @@ public class MessageServiceImpl implements MessageService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No messages found for chat room: " + chatRoomId);
         }
         return messages;
+    }
+
+    @Override
+    public SendMessageRequest createSendMessageRequest(UUID userId, UUID roomId, SendMessageRequest req) {
+        if (userId == null || roomId == null || req.getContent() == null || req.getContent().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid message parameters");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
+        return SendMessageRequest.builder()
+                .user(user)
+                .roomId(roomId)
+                .content(content)
+                .build();
+    }
+
+    private ChatMessageDto saveToDto(Message entity) {
+        return ChatMessageDto.builder()
+                .id(entity.getId())
+                .chatRoomId(entity.getChatRoom() != null ? entity.getChatRoom().getId() : null)
+                .senderId(entity.getSender() != null ? entity.getSender().getId() : null)
+                .content(entity.getContent())
+                .createdAt(entity.getCreateAt() != null ? entity.getCreateAt().toString() : null)
+                .build();
     }
 }

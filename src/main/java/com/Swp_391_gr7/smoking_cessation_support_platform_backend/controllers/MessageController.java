@@ -42,7 +42,7 @@ public class MessageController {
     public ResponseEntity<Message> sendMessage(@PathVariable UUID roomId, @RequestBody SendMessageRequest mess) {
         String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         UUID currentUserId = UUID.fromString(principal);
-        ChatMessageDto dto = MessageService.create(currentUserId, req);
+        ChatMessageDto dto = MessageService.create(currentUserId,roomId, req);
         return ResponseEntity.ok(messageService.save(message));
     }
 }
