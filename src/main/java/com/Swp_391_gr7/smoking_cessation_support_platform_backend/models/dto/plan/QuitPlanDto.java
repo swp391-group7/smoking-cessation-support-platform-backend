@@ -22,4 +22,5 @@ public class QuitPlanDto {
     private LocalDate targetDate;
     private LocalDateTime createAt;
     private String status;
+    private LocalDateTime updatedAt;
 }

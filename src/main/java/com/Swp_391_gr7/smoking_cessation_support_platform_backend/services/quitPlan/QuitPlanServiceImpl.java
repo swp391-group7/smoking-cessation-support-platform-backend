@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,19 +30,26 @@ public class QuitPlanServiceImpl implements QuitPlanService {
     public QuitPlanDto create(UUID userId, QuitPlanCreateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-//        Smoke_Survey smokeSurvey = smokeSurveyRepository.findByUserId(user.getId())
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Smoke survey not found"));
+
+        // 1. Cập nhật tất cả kế hoạch đang "active" của user thành "end"
+        List<Quit_Plan> activePlans = quitPlanRepository.findByUserIdAndStatusIgnoreCase(userId, "active");
+        for (Quit_Plan oldPlan : activePlans) {
+            oldPlan.setStatus("end");
+            quitPlanRepository.save(oldPlan);
+        }
+
+        // 2. Tạo kế hoạch mới với status = "active"
         Quit_Plan plan = Quit_Plan.builder()
                 .user(user)
-                //.smokeSurvey(smokeSurvey)
-                .startDate(request.getStartDate())
+                .startDate(LocalDate.now())
                 .targetDate(request.getTargetDate())
                 .method(request.getMethod())
-                .status(request.getStatus())
+                .status("active") // ép luôn thành active để đảm bảo đúng luồng
                 .build();
         Quit_Plan saved = quitPlanRepository.save(plan);
         return mapToDto(saved);
     }
+
 
     @Override
     public QuitPlanDto update(UUID id, QuitPlanCreateRequest request, UUID userId) {
@@ -49,7 +58,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         if (!plan.getUser().getId().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not allowed to edit this plan");
         }
-        plan.setStartDate(request.getStartDate());
+        plan.setStartDate(LocalDate.now());
         plan.setTargetDate(request.getTargetDate());
         plan.setMethod(request.getMethod());
         plan.setStatus(request.getStatus());
@@ -98,7 +107,14 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         // Assuming it should create a plan based on a smoke survey.
         throw new UnsupportedOperationException("Method not implemented yet");
     }
-
+    @Override
+    public QuitPlanDto getActivePlanByUserId(UUID userId) {
+        Quit_Plan plan = quitPlanRepository.findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (plan == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active plan found for this user");
+        }
+        return mapToDto(plan);
+    }
 
     private QuitPlanDto mapToDto(Quit_Plan entity) {
         return QuitPlanDto.builder()

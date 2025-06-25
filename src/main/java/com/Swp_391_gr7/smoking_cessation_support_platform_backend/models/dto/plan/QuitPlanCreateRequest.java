@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Setter
 public class QuitPlanCreateRequest {
 
-    private LocalDate startDate;
 
     private String method;
     private LocalDate targetDate;
