@@ -3,10 +3,13 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.CreateUserRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UpdateUserRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Coach;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Role;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CoachRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.RoleRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.coach.CoachService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -26,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CoachRepository coachRepository;
 
     @Override
     public UserDto createUser(CreateUserRequest request) {
@@ -48,6 +53,17 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         User savedUser = userRepository.save(newUser);
+        // Nếu role là COACH, tự động tạo hồ sơ Coach
+        // Nếu là coach, tự tạo hồ sơ coach mặc định
+        if ("coach".equalsIgnoreCase(savedUser.getRole().getRole())) {
+            Coach coach = Coach.builder()
+                    .user(savedUser)
+                    .bio("")
+                    .qualification("")
+                    .avgRating(BigDecimal.ZERO)
+                    .build();
+            coachRepository.save(coach);
+        }
         return mapToDto(savedUser);
     }
 
@@ -117,6 +133,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getUserEntityById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found: " + userId
+                ));
     }
 
     private UserDto mapToDto(User u) {

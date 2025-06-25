@@ -49,6 +49,7 @@ public class SecurityConfig {
 //                                "/roles/**",
 //                                "/users/**", // Thêm đường dẫn cho user
                                 "/surveys/{surveyId}/detail**", // Thêm đường dẫn cho survey
+                                "/coaches",// Thêm đường dẫn cho guest xem  coach
                                 "/error" // Thêm đường dẫn cho lỗi
 
                         ).permitAll()

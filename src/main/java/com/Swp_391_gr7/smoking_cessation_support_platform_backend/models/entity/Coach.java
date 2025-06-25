@@ -20,11 +20,11 @@ import java.util.UUID;
 public class Coach {
 
     @Id
-    @Column(name = "user_id", updatable = false, nullable = false, columnDefinition = "UUID")
+    @Column(name = "user_id")
     private UUID userId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId // Gán user.id vào khóa chính của Coach
+    @MapsId // dùng giá trị user.id làm khóa chính
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_coach_user"))
     private User user;
 
@@ -41,12 +41,4 @@ public class Coach {
     @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createAt = LocalDateTime.now();
-        if (this.avgRating == null) {
-            this.avgRating = BigDecimal.ZERO;
-        }
-    }
 }
