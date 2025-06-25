@@ -1,6 +1,7 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.ChatMessageDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.SendMessageRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoom;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Message;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
@@ -37,18 +38,11 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getMessagesByRoom(roomId));
     }
 
-    @MessageMapping("/sendMessage/{roomId}")
     @PostMapping("/sendMessage/{roomId}")
-    @SendTo("/topic/room/{roomId}")//subscribe
-    public ResponseEntity<Message> sendMessage(@PathVariable UUID roomId, @RequestBody ChatMessageDto messageDto) {
+    public ResponseEntity<Message> sendMessage(@PathVariable UUID roomId, @RequestBody SendMessageRequest mess) {
         String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         UUID currentUserId = UUID.fromString(principal);
-        Message message = Message.builder()
-                .chatRoom(ChatRoom.builder().id(roomId).build())
-                .sender(User.builder().id(currentUserId).build())
-                .content(messageDto.getContent())
-                .build();
-
+        ChatMessageDto dto = MessageService.create(currentUserId, req);
         return ResponseEntity.ok(messageService.save(message));
     }
 }
