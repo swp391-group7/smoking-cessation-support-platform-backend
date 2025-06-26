@@ -1,6 +1,7 @@
 // ChatRoomController.java
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.ChatRoomDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.chat.CreateChatRoomRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoom;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.chatroom.ChatRoomService;
@@ -22,7 +23,7 @@ public class ChatRoomController {
     }
 
     @GetMapping
-    public List<ChatRoom> getAll() {
+    public List<ChatRoomDto> getAll() {
         return service.getAllRooms();
     }
 
