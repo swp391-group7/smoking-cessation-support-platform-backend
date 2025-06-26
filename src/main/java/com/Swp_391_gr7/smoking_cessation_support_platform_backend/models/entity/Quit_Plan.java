@@ -19,9 +19,8 @@ import java.util.UUID;
 @Setter
 @Getter
 public class Quit_Plan {
-    @Id  // Khóa chính UUID
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 

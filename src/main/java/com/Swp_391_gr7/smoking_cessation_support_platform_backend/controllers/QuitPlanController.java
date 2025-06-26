@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan.QuitPlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,7 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,10 @@ import java.util.UUID;
 public class QuitPlanController {
     private final QuitPlanService quitPlanService;
 
+    private UUID getCurrentUserId() {
+        return (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     @Operation(summary = "Create a new Quit Plan")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Plan created successfully",
@@ -32,25 +38,83 @@ public class QuitPlanController {
     })
     @PostMapping("/create-plan")
     public ResponseEntity<QuitPlanDto> create(@Valid @RequestBody QuitPlanCreateRequest req) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        QuitPlanDto dto = quitPlanService.create(currentUserId, req);
+        QuitPlanDto dto = quitPlanService.create(getCurrentUserId(), req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @Operation(summary = "Update a Quit Plan")
+    @Operation(summary = "Generate a Quit Plan from Survey")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Plan updated successfully",
+            @ApiResponse(responseCode = "201", description = "Plan generated from survey",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = QuitPlanDto.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Survey or User not found", content = @Content)
     })
-    @PutMapping("/{id}/edit-plan")
-    public ResponseEntity<QuitPlanDto> update(@PathVariable UUID id, @Valid @RequestBody QuitPlanCreateRequest req) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        QuitPlanDto dto = quitPlanService.update(id, req, currentUserId);
+    @PostMapping("/generate-from-survey/{surveyId}")
+    public ResponseEntity<QuitPlanDto> generateFromSurvey(@PathVariable UUID surveyId) {
+        QuitPlanDto dto = quitPlanService.generatePlanFromSurvey(getCurrentUserId(), surveyId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @Operation(summary = "Create an immediate (active) Quit Plan")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Immediate plan created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = QuitPlanDto.class)))
+    })
+    @PostMapping("/create-immediate-plan")
+    public ResponseEntity<QuitPlanDto> createImmediate() {
+        QuitPlanDto dto = quitPlanService.createImmediatePlan(getCurrentUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @Operation(summary = "Create a draft Quit Plan")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Draft plan created",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = QuitPlanDto.class)))
+    })
+    @PostMapping("/create-draft-plan")
+    public ResponseEntity<QuitPlanDto> createDraft() {
+        QuitPlanDto dto = quitPlanService.createDraftPlan(getCurrentUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @Operation(summary = "Update the latest draft Quit Plan")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Draft updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = QuitPlanDto.class))),
+            @ApiResponse(responseCode = "404", description = "No draft found", content = @Content)
+    })
+    @PutMapping("/update-latest-draft")
+    public ResponseEntity<QuitPlanDto> updateLatestDraft(@Valid @RequestBody UpdateQuitPlanRequest req) {
+        QuitPlanDto dto = quitPlanService.updateLatestDraft(getCurrentUserId(), req);
         return ResponseEntity.ok(dto);
     }
+
+    @Operation(summary = "Delete all draft Quit Plans of current user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Drafts deleted successfully", content = @Content)
+    })
+    @DeleteMapping("/delete-all-drafts")
+    public ResponseEntity<Void> deleteAllDrafts() {
+        quitPlanService.deleteAllDrafts(getCurrentUserId());
+        return ResponseEntity.noContent().build();
+    }
+
+//    @Operation(summary = "Update an existing Quit Plan")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Plan updated successfully",
+//                    content = @Content(mediaType = "application/json",
+//                            schema = @Schema(implementation = QuitPlanDto.class))),
+//            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+//            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content)
+//    })
+//    @PutMapping("/{id}/edit-plan")
+//    public ResponseEntity<QuitPlanDto> update(@PathVariable UUID id, @Valid @RequestBody QuitPlanCreateRequest req) {
+//        QuitPlanDto dto = quitPlanService.update(id, req, getCurrentUserId());
+//        return ResponseEntity.ok(dto);
+//    }
 
     @Operation(summary = "Get Quit Plan by ID")
     @ApiResponses({
@@ -72,8 +136,7 @@ public class QuitPlanController {
     })
     @DeleteMapping("/{id}/delete-plan")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        quitPlanService.delete(id, currentUserId);
+        quitPlanService.delete(id, getCurrentUserId());
         return ResponseEntity.noContent().build();
     }
 
@@ -98,12 +161,9 @@ public class QuitPlanController {
     public ResponseEntity<List<QuitPlanDto>> searchPlans(
             @RequestParam(required = false) String method,
             @RequestParam(required = false) String status) {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<QuitPlanDto> results = quitPlanService.searchByMethodOrStatus(method, status, currentUserId);
+        List<QuitPlanDto> results = quitPlanService.searchByMethodOrStatus(method, status, getCurrentUserId());
         return ResponseEntity.ok(results);
     }
-
-
 
     @Operation(summary = "Get active Quit Plan of current user")
     @ApiResponses({
@@ -114,9 +174,7 @@ public class QuitPlanController {
     })
     @GetMapping("/active")
     public ResponseEntity<QuitPlanDto> getActivePlan() {
-        UUID currentUserId = (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        QuitPlanDto dto = quitPlanService.getActivePlanByUserId(currentUserId);
+        QuitPlanDto dto = quitPlanService.getActivePlanByUserId(getCurrentUserId());
         return ResponseEntity.ok(dto);
     }
-
 }
