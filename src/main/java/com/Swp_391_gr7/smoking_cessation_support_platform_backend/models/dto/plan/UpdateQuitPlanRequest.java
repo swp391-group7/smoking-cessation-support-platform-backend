@@ -13,5 +13,5 @@ public class UpdateQuitPlanRequest {
 
     private LocalDate startDate;
     private LocalDate targetDate;
-    private String status;
+
 }

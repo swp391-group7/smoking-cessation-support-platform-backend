@@ -173,7 +173,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No draft found"));
         latest.setStartDate(request.getStartDate());
         latest.setTargetDate(request.getTargetDate());
-        latest.setStatus(request.getStatus());
+        latest.setStatus("active");
         Quit_Plan updated = quitPlanRepository.save(latest);
         return mapToDto(updated);
     }
