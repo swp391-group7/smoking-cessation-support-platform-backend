@@ -1,8 +1,10 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.CreateUserSurveyRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UpdateUserSurveyRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UseSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,14 @@ import java.util.UUID;
 public class UserSurveyController {
 
     private final UseSurveyService surveyService;
+    private final UserService userService;
+
+    private boolean isAdmin(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        UserDto dto = userService.getUserById(userId);
+        return "admin".equalsIgnoreCase(dto.getRoleName());
+    }
 
     @Operation(
             summary = "Create a new Smoke Survey",

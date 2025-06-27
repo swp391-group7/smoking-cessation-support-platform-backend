@@ -1,8 +1,10 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userbadge.UserBadgeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserBadgeController {
     private final UserBadgeService userBadgesService;
+
+    private final UserService userService;
+
+    private boolean isAdmin(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        UserDto dto = userService.getUserById(userId);
+        return "admin".equalsIgnoreCase(dto.getRoleName());
+    }
 
     @Operation(summary = "Award a badge to a user")
     @ApiResponses({
