@@ -171,7 +171,6 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         Quit_Plan latest = quitPlanRepository.findByUserIdAndStatusIgnoreCase(userId, "draft").stream()
                 .max(Comparator.comparing(Quit_Plan::getCreateAt))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No draft found"));
-        latest.setStartDate(request.getStartDate());
         latest.setTargetDate(request.getTargetDate());
         latest.setStatus("active");
         Quit_Plan updated = quitPlanRepository.save(latest);

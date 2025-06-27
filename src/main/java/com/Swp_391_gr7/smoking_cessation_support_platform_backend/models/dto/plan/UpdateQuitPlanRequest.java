@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 public class UpdateQuitPlanRequest {
 
-    private LocalDate startDate;
+
     private LocalDate targetDate;
 
 }
