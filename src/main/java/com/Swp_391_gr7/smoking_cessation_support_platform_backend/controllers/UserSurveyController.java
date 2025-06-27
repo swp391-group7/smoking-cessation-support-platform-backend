@@ -109,5 +109,19 @@ public class UserSurveyController {
         surveyService.deleteSurvey(currentUserId);
         return ResponseEntity.noContent().build();
     }
+
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Survey retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserSurveyDto.class))),
+            @ApiResponse(responseCode = "404", description = "Survey not found for given userId",
+                    content = @Content)
+    })
+    @GetMapping("/{UserId}/get-survey")
+    public ResponseEntity<UserSurveyDto> getSurveyByUserId(@PathVariable UUID UserId) {
+        UserSurveyDto dto = surveyService.getSurvey(UserId);
+        return ResponseEntity.ok(dto);
+    }
+
 }
 

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,5 +47,20 @@ public class UserBadgeController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserBadgeDto>> getUserBadges(@PathVariable UUID userId) {
         return ResponseEntity.ok(userBadgesService.getUserBadges(userId));
+    }
+
+    @Operation(summary = "Get all badges of the current user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Badge created successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BadgeDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
+    })
+    @GetMapping("/user/current")
+    public ResponseEntity<List<UserBadgeDto>> getCurrentUserBadges() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return ResponseEntity.ok(userBadgesService.getUserBadges(currentUserId));
     }
 }
