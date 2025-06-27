@@ -112,4 +112,13 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .createAt(entity.getCreateAt())
                 .build();
     }
+
+    @Override
+    public List<QuitPlanDto> getByUserId(UUID userId) {
+        return quitPlanRepository.findByUserId(userId)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
 }

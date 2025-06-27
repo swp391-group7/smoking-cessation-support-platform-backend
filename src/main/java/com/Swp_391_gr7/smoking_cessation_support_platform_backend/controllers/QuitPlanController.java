@@ -113,4 +113,15 @@ public class QuitPlanController {
         List<QuitPlanDto> results = quitPlanService.searchByMethodOrStatus(method, status, currentUserId);
         return ResponseEntity.ok(results);
     }
+
+
+    @GetMapping("/user/{userId}/get-plans-by-user-id")
+    public ResponseEntity<?> getPlansByUserId(@PathVariable UUID userId, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
+        }
+        List<QuitPlanDto> plans = quitPlanService.getByUserId(userId);
+        return ResponseEntity.ok(plans);
+    }
+
 }

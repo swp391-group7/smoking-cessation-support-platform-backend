@@ -129,7 +129,10 @@ public class UserSurveyController {
                     content = @Content)
     })
     @GetMapping("/{UserId}/get-survey")
-    public ResponseEntity<UserSurveyDto> getSurveyByUserId(@PathVariable UUID UserId) {
+    public ResponseEntity<?> getSurveyByUserId(@PathVariable UUID UserId, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
+        }
         UserSurveyDto dto = surveyService.getSurvey(UserId);
         return ResponseEntity.ok(dto);
     }

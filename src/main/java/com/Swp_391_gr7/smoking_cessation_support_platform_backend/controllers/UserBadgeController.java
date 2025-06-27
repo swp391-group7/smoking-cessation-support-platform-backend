@@ -57,7 +57,10 @@ public class UserBadgeController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserBadgeDto>> getUserBadges(@PathVariable UUID userId) {
+    public ResponseEntity<?> getUserBadges(@PathVariable UUID userId, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
+        }
         return ResponseEntity.ok(userBadgesService.getUserBadges(userId));
     }
 

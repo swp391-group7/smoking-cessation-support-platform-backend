@@ -14,4 +14,5 @@ public interface QuitPlanService {
     List<QuitPlanDto> getAll();
     List<QuitPlanDto> searchByMethodOrStatus(String method, String status, UUID userId);
     QuitPlanDto generatePlanFromSurvey(UUID userId, UUID smokeSurveyId);
+    List<QuitPlanDto> getByUserId(UUID userId);
 }
