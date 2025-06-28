@@ -1,8 +1,10 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userbadge.UserBadgeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +26,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserBadgeController {
     private final UserBadgeService userBadgesService;
+
+    private final UserService userService;
+
+    private boolean isAdmin(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        UserDto dto = userService.getUserById(userId);
+        return "admin".equalsIgnoreCase(dto.getRoleName());
+    }
 
     @Operation(summary = "Award a badge to a user")
     @ApiResponses({
@@ -44,7 +57,25 @@ public class UserBadgeController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserBadgeDto>> getUserBadges(@PathVariable UUID userId) {
+    public ResponseEntity<?> getUserBadges(@PathVariable UUID userId, Authentication authentication) {
+        if (!isAdmin(authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
+        }
         return ResponseEntity.ok(userBadgesService.getUserBadges(userId));
+    }
+
+    @Operation(summary = "Get all badges of the current user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Badge created successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BadgeDto.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
+    })
+    @GetMapping("/user/current")
+    public ResponseEntity<List<UserBadgeDto>> getCurrentUserBadges() {
+        UUID currentUserId = (UUID) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return ResponseEntity.ok(userBadgesService.getUserBadges(currentUserId));
     }
 }

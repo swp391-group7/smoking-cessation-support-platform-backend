@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserRequest request, Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to register users");
         }
         UserDto created = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -39,7 +39,7 @@ public class UserController {
     @GetMapping("/get-current")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to access this resource");
         }
         UUID userId = UUID.fromString(authentication.getName());
         UserDto dto = userService.getUserById(userId);
@@ -49,7 +49,7 @@ public class UserController {
     @PutMapping("/update")
     public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request, Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to update users");
         }
         UUID userId = UUID.fromString(authentication.getName());
         UserDto updated = userService.updateUser(userId, request);
@@ -59,7 +59,7 @@ public class UserController {
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteCurrentUser(Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to delete users");
         }
         UUID userId = UUID.fromString(authentication.getName());
         userService.deleteUser(userId);
@@ -69,7 +69,7 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllUsers(Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view all users");
         }
         List<UserDto> all = userService.getAllUsers();
         return ResponseEntity.ok(all);
@@ -78,7 +78,7 @@ public class UserController {
     @GetMapping("/by-role")
     public ResponseEntity<?> getUsersByRole(@RequestParam String roleName, Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view users by role");
         }
         List<UserDto> users = userService.getUsersByRole(roleName);
         return ResponseEntity.ok(users);
@@ -87,7 +87,7 @@ public class UserController {
     @GetMapping("/get/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable UUID userId, Authentication authentication) {
         if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không phải là admin");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
         }
         UserDto dto = userService.getUserById(userId);
         return ResponseEntity.ok(dto);

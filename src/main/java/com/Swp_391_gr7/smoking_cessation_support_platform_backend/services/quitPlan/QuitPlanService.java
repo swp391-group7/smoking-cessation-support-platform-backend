@@ -1,9 +1,8 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan;
 
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +14,7 @@ public interface QuitPlanService {
     List<QuitPlanDto> getAll();
     List<QuitPlanDto> searchByMethodOrStatus(String method, String status, UUID userId);
     QuitPlanDto generatePlanFromSurvey(UUID userId, UUID smokeSurveyId);
+
     QuitPlanDto getActivePlanByUserId(UUID userId);
 
 
@@ -40,4 +40,5 @@ public interface QuitPlanService {
      * Cập nhật kế hoạch draft gần nhất của user.
      */
     QuitPlanDto updateLatestDraft(UUID userId, UpdateQuitPlanRequest request);
+
 }

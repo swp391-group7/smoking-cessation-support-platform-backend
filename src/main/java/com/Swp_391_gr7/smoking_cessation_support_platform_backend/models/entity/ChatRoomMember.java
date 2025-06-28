@@ -15,28 +15,24 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "messages")
-public class Message {
+@Table(name = "chat_room_members")
+public class ChatRoomMember {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_message_user"))
-    private User sender;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "chat_room_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_message_chat_room"))
+            foreignKey = @ForeignKey(name = "fk_chat_room_member_chat_room"))
     private ChatRoom chatRoom;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_chat_room_user"))
+    private User user;
 
     @CreationTimestamp
-    @Column (name = "create_at", nullable = false, updatable = false)
-    private LocalDateTime createAt;
-
+    @Column (name = "joined_at", nullable = false, updatable = false)
+    private LocalDateTime joinedAt;
 }

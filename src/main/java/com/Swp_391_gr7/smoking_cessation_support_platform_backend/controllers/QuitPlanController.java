@@ -4,6 +4,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.pla
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan.QuitPlanService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,6 +25,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class QuitPlanController {
     private final QuitPlanService quitPlanService;
+    private final UserService userService;
+
+    private boolean isAdmin(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        UserDto dto = userService.getUserById(userId);
+        return "admin".equalsIgnoreCase(dto.getRoleName());
+    }
 
     private UUID getCurrentUserId() {
         return (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
