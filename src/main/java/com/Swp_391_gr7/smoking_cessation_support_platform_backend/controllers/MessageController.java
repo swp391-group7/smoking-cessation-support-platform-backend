@@ -25,15 +25,13 @@ public class MessageController {
     private final MessageService messageService;
     private ChatRoomRepository roomRepository;
 
-
-
     //for sending and receiving messages
-    @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<Message>> getRoomMessages(@PathVariable UUID roomId) {
+    @GetMapping("/room/{roomId}/getMessages")
+    public ResponseEntity<?> getRoomMessages(@PathVariable UUID roomId) {
         return ResponseEntity.ok(messageService.getMessagesByRoom(roomId));
     }
 
-    @PostMapping("/sendMessage/{roomId}")
+    @PostMapping("/sendMessage/{roomId}/send")
     public ResponseEntity<ChatMessageDto> sendMessage(@PathVariable UUID roomId, @RequestBody SendMessageRequest mess) {
         String principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         UUID currentUserId = UUID.fromString(principal);

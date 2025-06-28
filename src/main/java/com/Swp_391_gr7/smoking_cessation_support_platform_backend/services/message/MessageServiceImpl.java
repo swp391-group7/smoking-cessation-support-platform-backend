@@ -30,8 +30,8 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<Message> getMessagesByRoom(UUID chatRoomId) {
-        List<Message> messages = repo.findByChatRoomId(chatRoomId);
+    public List<ChatMessageDto> getMessagesByRoom(UUID chatRoomId) {
+        List<ChatMessageDto> messages = repo.findByChatRoomId(chatRoomId);
         if (messages == null || messages.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No messages found for chat room: " + chatRoomId);
         }

@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface MessageService {
     Message save(Message message);
-    List<Message> getMessagesByRoom(UUID chatRoomId);
+    List<ChatMessageDto> getMessagesByRoom(UUID chatRoomId);
     ChatMessageDto createSendMessageRequest(UUID userId, UUID roomId, SendMessageRequest sendMessageRequest);
 }
