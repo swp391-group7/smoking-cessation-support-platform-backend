@@ -27,12 +27,7 @@ public class QuitPlanController {
     private final QuitPlanService quitPlanService;
     private final UserService userService;
 
-    private boolean isAdmin(Authentication authentication) {
-        UUID userId = UUID.fromString(authentication.getName());
 
-        UserDto dto = userService.getUserById(userId);
-        return "admin".equalsIgnoreCase(dto.getRoleName());
-    }
 
     private UUID getCurrentUserId() {
         return (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

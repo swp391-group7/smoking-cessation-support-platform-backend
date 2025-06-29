@@ -27,8 +27,11 @@ public class MessageController {
 
     //for sending and receiving messages
     @GetMapping("/room/{roomId}/getMessages")
-    public ResponseEntity<?> getRoomMessages(@PathVariable UUID roomId) {
+    public ResponseEntity<List<ChatMessageDto>> getRoomMessages(@PathVariable UUID roomId) {
         return ResponseEntity.ok(messageService.getMessagesByRoom(roomId));
+//        return blogPostService.getById(id)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/sendMessage/{roomId}/send")

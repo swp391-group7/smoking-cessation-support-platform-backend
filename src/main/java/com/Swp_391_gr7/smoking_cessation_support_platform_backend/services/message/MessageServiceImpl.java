@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,11 +32,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<ChatMessageDto> getMessagesByRoom(UUID chatRoomId) {
-        List<ChatMessageDto> messages = repo.findByChatRoomId(chatRoomId);
-        if (messages == null || messages.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No messages found for chat room: " + chatRoomId);
-        }
-        return messages;
+        return repo.findByChatRoomId(chatRoomId).stream().map(this::mapToDto).toList();
     }
 
     @Override
@@ -46,8 +43,8 @@ public class MessageServiceImpl implements MessageService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
         Message message = Message.builder()
-                .chatRoom(chatRoomRepository.getById(roomId))
-                .sender(user)
+                .chatRoomId(roomId)
+                .senderId(userId)
                 .content(req.getContent())
                 .build();
         Message saved = repo.save(message);
@@ -57,8 +54,8 @@ public class MessageServiceImpl implements MessageService {
     private ChatMessageDto mapToDto(Message entity) {
         return ChatMessageDto.builder()
                 .id(entity.getId())
-                .chatRoomId(entity.getChatRoom() != null ? entity.getChatRoom().getId() : null)
-                .senderId(entity.getSender() != null ? entity.getSender().getId() : null)
+                .chatRoomId(entity.getChatRoomId())
+                .senderId(entity.getSenderId())
                 .content(entity.getContent())
                 .createdAt(entity.getCreateAt())
                 .build();

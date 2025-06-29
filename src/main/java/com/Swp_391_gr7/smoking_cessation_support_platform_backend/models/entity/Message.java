@@ -22,15 +22,15 @@ public class Message {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_message_user"))
-    private User sender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_message_user"))
+    private UUID senderId;
+
+
     @JoinColumn(name = "chat_room_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_message_chat_room"))
-    private ChatRoom chatRoom;
+    private UUID chatRoomId;
 
     @Column(name = "content", nullable = false)
     private String content;
