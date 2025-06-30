@@ -164,7 +164,23 @@ public class UserSurveyController {
         return ResponseEntity.ok(dtoList);
     }
 
+    @Operation(
+    summary = "Get All Smoke Surveys of a User",
+    description = "Lấy toàn bộ các khảo sát hút thuốc của user hiện tại."
+            )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Surveys retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserSurveyDto.class))),
+            @ApiResponse(responseCode = "404", description = "No surveys found for given userId",
+                    content = @Content)
+    })
+    @GetMapping("/get-all-surveys-of-user/{userId}")
+    public ResponseEntity<List<UserSurveyDto>> getAllSurveysOfanUser(@PathVariable UUID userId) {
 
+        List<UserSurveyDto> dtoList = surveyService.getAllSurveyOfUser(userId);
+        return ResponseEntity.ok(dtoList);
+    }
 
 
 }

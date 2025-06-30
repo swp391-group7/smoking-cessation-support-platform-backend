@@ -189,7 +189,7 @@ public class QuitPlanController {
                             schema = @Schema(implementation = QuitPlanDto.class))),
             @ApiResponse(responseCode = "404", description = "No active plan found", content = @Content)
     })
-    @GetMapping("/active/{userId}")
+    @GetMapping("/active-plan-of-an-user/{userId}")
     public ResponseEntity<QuitPlanDto> getActivePlan(@PathVariable UUID userId) {
         QuitPlanDto dto = quitPlanService.getActivePlanByUserId(userId);
         return ResponseEntity.ok(dto);
