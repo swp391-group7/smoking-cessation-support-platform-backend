@@ -28,6 +28,21 @@ public class Package_Types {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "des1", columnDefinition = "TEXT")
+    private String des1; // Mô tả ngắn gọn về gói, có thể là các tính năng chính
+
+    @Column(name = "des2", columnDefinition = "TEXT")
+    private String des2; // Mô tả ngắn gọn về gói, có thể là các tính năng chính
+
+    @Column(name = "des3", columnDefinition = "TEXT")
+    private String des3; // Mô tả ngắn gọn về gói, có thể là các tính năng chính
+
+    @Column(name = "des4", columnDefinition = "TEXT")
+    private String des4; // Mô tả ngắn gọn về gói, có thể là các tính năng chính
+
+    @Column(name = "des5", columnDefinition = "TEXT")
+    private String des5; // Mô tả ngắn gọn về gói, có thể là các tính năng chính
+
     @Column(name = "price", nullable = false)
     private BigDecimal price; // Dùng BigDecimal cho tiền tệ chính xác
 

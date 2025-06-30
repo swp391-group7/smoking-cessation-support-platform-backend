@@ -13,6 +13,11 @@ import java.math.BigDecimal;
 @Builder
 public class CreatePackageTypeRequest {
     private String description;
+    private String des1;
+    private String des2;
+    private String des3;
+    private String des4;
+    private String des5;
     private BigDecimal price;
     private Integer duration;
 }
