@@ -14,7 +14,7 @@ public interface SurveyService {
 
     SurveyDto updateSurvey(UUID userId, UpdateSurveyRequest request);
 
-    void deleteSurvey(UUID userId);
+    void deleteSurvey(UUID surveyId);
     SurveyDto getSurveyById(UUID surveyId);
     SurveyDetailDto getSurveyDetail(UUID surveyId);
 
