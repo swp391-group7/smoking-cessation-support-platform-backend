@@ -71,14 +71,14 @@ public class SurveyController {
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/delete-survey")
-    public ResponseEntity<?> deleteSurvey(Authentication authentication) {
+    @DeleteMapping("/delete-survey/{surveyId}")
+    public ResponseEntity<?> deleteSurvey(@PathVariable UUID surveyId, Authentication authentication) {
         if (isNotAdmin(authentication)) return forbiddenResponse();
 
-        UUID currentUserId = UUID.fromString(authentication.getName());
-        surveyService.deleteSurvey(currentUserId);
+        surveyService.deleteSurvey(surveyId);
         return ResponseEntity.noContent().build();
     }
+
 
     @GetMapping("/{surveyId}")
     public ResponseEntity<?> getSurveyById(
