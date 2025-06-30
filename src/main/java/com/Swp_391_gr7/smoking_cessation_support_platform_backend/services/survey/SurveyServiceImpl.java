@@ -71,10 +71,10 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public void deleteSurvey(UUID userId) {
-        Survey entity = surveyRepository.findByUserId(userId)
+    public void deleteSurvey(UUID surveyId) {
+        Survey entity = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Survey not found for userId: " + userId
+                        HttpStatus.NOT_FOUND, "Survey not found with Id: " + surveyId
                 ));
         surveyRepository.delete(entity);
     }
