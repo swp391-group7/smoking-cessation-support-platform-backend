@@ -6,7 +6,6 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cha
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.ChatRoom;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Message;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.ChatRoomRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.MessageRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository repo;
     private final UserRepository userRepository;
-    private final ChatRoomRepository chatRoomRepository;
+
 
     @Override
     public Message save(Message message) {
