@@ -1,20 +1,23 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity;
-import lombok.*;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Entity
-@Table(name = "notifications")
+@Table(name = "progress_notifications")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notification {
+public class ProgresssNotification {
     @Id  // Khóa chính UUID
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
@@ -42,5 +45,7 @@ public class Notification {
     private LocalDateTime expirationAt;  // Thời điểm hết hạn
 
     @Column(nullable = false)
-    private String type;    // Loại thông báo (remind, badge)
+    private String type;
+
+    private Boolean status; 
 }
