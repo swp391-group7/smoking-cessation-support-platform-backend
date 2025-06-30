@@ -21,4 +21,5 @@ public class ProgressNotificationDto {
     private String type;
     private LocalDateTime sentAt;
     private LocalDateTime expireAt;
+    private Boolean isRead = false;
 }
