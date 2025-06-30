@@ -18,18 +18,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProgresssNotification {
-    @Id  // Khóa chính UUID
+    @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_notification_user_id"))
-    private UUID userId;
-
-    @Column(nullable = false)
-    private String title;   // Tiêu đề thông báo
+    @JoinColumn(name = "Quit_plan_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_notification_plan_id"))
+    private UUID planId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message; // Nội dung thông báo
@@ -39,13 +36,14 @@ public class ProgresssNotification {
 
     @Column(name = "sent_at")
     @CreationTimestamp
-    private LocalDateTime sentAt;        // Thời điểm gửi
+    private LocalDateTime sentAt;
 
     @Column(name = "expiration_at")
-    private LocalDateTime expirationAt;  // Thời điểm hết hạn
+    private LocalDateTime expirationAt;
 
     @Column(nullable = false)
     private String type;
 
-    private Boolean status; 
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
 }
