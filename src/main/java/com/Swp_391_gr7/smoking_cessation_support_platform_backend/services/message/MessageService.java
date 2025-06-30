@@ -13,4 +13,5 @@ public interface MessageService {
     Message save(Message message);
     List<ChatMessageDto> getMessagesByRoom(UUID chatRoomId);
     ChatMessageDto createSendMessageRequest(UUID userId, UUID roomId, SendMessageRequest sendMessageRequest);
+    List<ChatMessageDto> getMessagesByRoomNewest(UUID chatRoomId);
 }

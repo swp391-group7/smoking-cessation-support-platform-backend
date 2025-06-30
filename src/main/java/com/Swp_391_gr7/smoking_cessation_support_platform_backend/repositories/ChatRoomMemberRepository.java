@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, Long> {
     List<ChatRoomMember> findByChatRoomId(UUID chatRoomId);
     void deleteByChatRoomIdAndUserId(UUID chatRoomId, UUID userId);
+
 }

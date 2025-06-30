@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
     List<Message> findByChatRoomIdOrderByCreateAtAsc(UUID chatRoomId);
-
+    List<Message> findByChatRoomIdOrderByCreateAtDesc(UUID chatRoomId);
     List<Message> findByChatRoomId(UUID chatRoomId);
 }

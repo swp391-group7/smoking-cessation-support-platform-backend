@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,13 @@ public class MessageServiceImpl implements MessageService {
     public List<ChatMessageDto> getMessagesByRoom(UUID chatRoomId) {
         return repo.findByChatRoomId(chatRoomId).stream().map(this::mapToDto).toList();
     }
+
+    @Override
+    public List<ChatMessageDto> getMessagesByRoomNewest(UUID chatRoomId) {
+        List<Message> messages = repo.findByChatRoomIdOrderByCreateAtDesc(chatRoomId);
+        return messages.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
 
     @Override
     public ChatMessageDto createSendMessageRequest(UUID userId, UUID roomId, SendMessageRequest req) {

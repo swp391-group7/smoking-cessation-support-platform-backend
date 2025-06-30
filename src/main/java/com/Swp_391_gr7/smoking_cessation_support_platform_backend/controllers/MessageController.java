@@ -29,9 +29,11 @@ public class MessageController {
     @GetMapping("/room/{roomId}/getMessages")
     public ResponseEntity<List<ChatMessageDto>> getRoomMessages(@PathVariable UUID roomId) {
         return ResponseEntity.ok(messageService.getMessagesByRoom(roomId));
-//        return blogPostService.getById(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/room/{roomId}/newest")
+    public List<ChatMessageDto> getMessagesByRoomNewest(@PathVariable UUID roomId) {
+        return messageService.getMessagesByRoomNewest(roomId);
     }
 
     @PostMapping("/sendMessage/{roomId}/send")
