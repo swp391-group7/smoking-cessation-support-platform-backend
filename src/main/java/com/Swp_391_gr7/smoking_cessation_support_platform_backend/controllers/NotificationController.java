@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationCreationRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationUpdateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.usernotification.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +41,7 @@ public class NotificationController {
                     content = @Content(schema = @Schema(implementation = NotificationDto.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<NotificationDto> update(@PathVariable UUID id, @Valid @RequestBody NotificationDto req) {
+    public ResponseEntity<NotificationDto> update(@PathVariable UUID id, @Valid @RequestBody NotificationUpdateRequest req) {
         NotificationDto dto = notificationService.update(id, req);
         return ResponseEntity.ok(dto);
     }

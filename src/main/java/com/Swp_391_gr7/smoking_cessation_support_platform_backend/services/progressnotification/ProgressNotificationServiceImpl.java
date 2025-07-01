@@ -70,6 +70,20 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
         return progressNotificationRepository.findByPlanId(planId).stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProgressNotificationDto> searchByContent(String content) {
+        return progressNotificationRepository.findByMessageContainingIgnoreCase(content).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProgressNotificationDto> searchByType(String type) {
+        return progressNotificationRepository.findByTypeContainingIgnoreCase(type).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     private ProgressNotificationDto mapToDto(ProgressNotification entity) {
         return ProgressNotificationDto.builder()
                 .id(entity.getId())

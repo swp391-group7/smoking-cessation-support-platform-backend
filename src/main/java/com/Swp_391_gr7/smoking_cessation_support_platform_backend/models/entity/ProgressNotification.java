@@ -47,3 +47,4 @@ public class ProgressNotification {
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
 }
+

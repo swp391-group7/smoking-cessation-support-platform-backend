@@ -2,10 +2,13 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationCreationRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.notification.NotificationUpdateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Notification;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,12 +32,11 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
     }
 
-    private void updateEntity(Notification n, NotificationDto dto) {
+    private void updateEntity(Notification n, NotificationUpdateRequest dto) {
         n.setTitle(dto.getTitle());
         n.setMessage(dto.getMessage());
         n.setChannel(dto.getChannel());
         n.setType(dto.getType());
-        n.setExpiredAt(dto.getExpireAt());
     }
 
     @Override
@@ -51,14 +53,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationDto update(UUID id, NotificationDto dto) {
+    public NotificationDto update(UUID id, NotificationUpdateRequest dto) {
         Notification n = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
-        n.setTitle(dto.getTitle());
-        n.setMessage(dto.getMessage());
-        n.setChannel(dto.getChannel());
-        n.setType(dto.getType());
-        n.setExpiredAt(dto.getExpireAt());
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
+        updateEntity(n, dto);
         Notification updated = notificationRepository.save(n);
         return mapToDto(updated);
     }
@@ -68,15 +66,36 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.deleteById(id);
     }
 
-
-
     @Override
     public NotificationDto getById(UUID id) {
-        return notificationRepository.findById(id).map(this::mapToDto).orElse(null);
+        return notificationRepository.findById(id)
+                .map(this::mapToDto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
     }
 
     @Override
     public List<NotificationDto> getByUserId(UUID userId) {
-        return notificationRepository.findByUserId(userId).stream().map(this::mapToDto).collect(Collectors.toList());
+        return notificationRepository.findByUserId(userId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    // New methods for search by title, content, type (case-insensitive, contains)
+    public List<NotificationDto> searchByTitle(String title) {
+        return notificationRepository.findByTitleContainingIgnoreCase(title).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<NotificationDto> searchByContent(String content) {
+        return notificationRepository.findByMessageContainingIgnoreCase(content).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<NotificationDto> searchByType(String type) {
+        return notificationRepository.findByTypeContainingIgnoreCase(type).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 }
