@@ -42,7 +42,6 @@ public class PackageTypeController {
     })
     @PostMapping
     public ResponseEntity<?> createPackageType(
-
             @Valid @RequestBody CreatePackageTypeRequest request,
             Authentication authentication
     ) {
