@@ -181,4 +181,17 @@ public class QuitPlanController {
         QuitPlanDto dto = quitPlanService.getActivePlanByUserId(getCurrentUserId());
         return ResponseEntity.ok(dto);
     }
+
+    @Operation(summary = "Get active Quit Plan of a user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Active plan retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = QuitPlanDto.class))),
+            @ApiResponse(responseCode = "404", description = "No active plan found", content = @Content)
+    })
+    @GetMapping("/active-plan-of-an-user/{userId}")
+    public ResponseEntity<QuitPlanDto> getActivePlan(@PathVariable UUID userId) {
+        QuitPlanDto dto = quitPlanService.getActivePlanByUserId(userId);
+        return ResponseEntity.ok(dto);
+    }
 }

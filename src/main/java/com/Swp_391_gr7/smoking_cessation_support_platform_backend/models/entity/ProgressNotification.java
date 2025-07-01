@@ -1,32 +1,32 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity;
-import lombok.*;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Entity
-@Table(name = "notifications")
+@Table(name = "progress_notifications")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Notification {
-    @Id  // Khóa chính UUID
+public class ProgressNotification {
+    @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
-    @JoinColumn(name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_notification_user_id"))
-    private UUID userId;
-
-    @Column(nullable = false)
-    private String title;   // Tiêu đề thông báo
+    @JoinColumn(name = "Quit_plan_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_notification_plan_id"))
+    private UUID planId;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String message; // Nội dung thông báo
@@ -36,11 +36,14 @@ public class Notification {
 
     @Column(name = "sent_at")
     @CreationTimestamp
-    private LocalDateTime sentAt;        // Thời điểm gửi
+    private LocalDateTime sentAt;
 
     @Column(name = "expiration_at")
-    private LocalDateTime expirationAt;  // Thời điểm hết hạn
+    private LocalDateTime expirationAt;
 
     @Column(nullable = false)
-    private String type;    // Loại thông báo (remind, badge)
+    private String type;
+
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
 }
