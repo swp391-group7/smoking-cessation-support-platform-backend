@@ -39,7 +39,7 @@ public class Notification {
     private LocalDateTime sentAt;        // Thời điểm gửi
 
     @Column(name = "expiration_at")
-    private LocalDateTime expirationAt;  // Thời điểm hết hạn
+    private LocalDateTime expiredAt;  // Thời điểm hết hạn
 
     @Column(nullable = false)
     private String type;    // Loại thông báo (remind, badge)

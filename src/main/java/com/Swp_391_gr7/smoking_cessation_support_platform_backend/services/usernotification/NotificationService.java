@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface NotificationService {
-    Notification create(NotificationDto dto);
-    Notification update(UUID id, NotificationDto dto);
+    NotificationDto create(NotificationDto dto);
+    NotificationDto update(UUID id, NotificationDto dto);
     void delete(UUID id);
     NotificationDto getById(UUID id);
     List<NotificationDto> getByUserId(UUID userId);
