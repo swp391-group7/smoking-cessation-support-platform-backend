@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NotificationCreation {
+public class NotificationCreationRequest {
     private String title;
     private String message;
     private String channel;
