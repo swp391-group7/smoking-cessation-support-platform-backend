@@ -42,12 +42,12 @@ public class PackageTypeController {
     })
     @PostMapping
     public ResponseEntity<?> createPackageType(
-            @RequestParam String name,
+
             @Valid @RequestBody CreatePackageTypeRequest request,
             Authentication authentication
     ) {
         if (isNotAdmin(authentication)) return forbiddenResponse();
-        PackageTypeDto dto = packageTypeService.createPackageType(name, request);
+        PackageTypeDto dto = packageTypeService.createPackageType(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

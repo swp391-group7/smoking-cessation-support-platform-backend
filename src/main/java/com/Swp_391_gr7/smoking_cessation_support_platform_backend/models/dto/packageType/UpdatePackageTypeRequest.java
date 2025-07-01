@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class UpdatePackageTypeRequest {
+    private String name;
     private String description;
     private String des1;
     private String des2;
