@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ProgressNotificationService {
-    ProgressNotificationDto create(CreateProgressNotificationReq req);
+    ProgressNotificationDto create(UUID planId, CreateProgressNotificationReq req);
     ProgressNotificationDto update(UUID id, UpdateProgressNotificationRequest dto);
     void delete(UUID id);
     ProgressNotificationDto changeStatus(UUID id);

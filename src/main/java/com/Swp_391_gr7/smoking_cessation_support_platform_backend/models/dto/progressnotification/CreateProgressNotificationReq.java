@@ -12,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CreateProgressNotificationReq {
-    private UUID planId;
     private String title;
     private String message;
     private String channel;

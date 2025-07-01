@@ -29,9 +29,9 @@ public class ProgressNotificationController {
             @ApiResponse(responseCode = "201", description = "Created successfully",
                     content = @Content(schema = @Schema(implementation = ProgressNotificationDto.class)))
     })
-    @PostMapping
-    public ResponseEntity<ProgressNotificationDto> create(@Valid @RequestBody CreateProgressNotificationReq req) {
-        ProgressNotificationDto dto = progressNotificationService.create(req);
+    @PostMapping("/{planId}/create")
+    public ResponseEntity<ProgressNotificationDto> create(@PathVariable UUID planId, @Valid @RequestBody CreateProgressNotificationReq req) {
+        ProgressNotificationDto dto = progressNotificationService.create(planId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -40,7 +40,7 @@ public class ProgressNotificationController {
             @ApiResponse(responseCode = "200", description = "Updated successfully",
                     content = @Content(schema = @Schema(implementation = ProgressNotificationDto.class)))
     })
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<ProgressNotificationDto> update(@PathVariable UUID id, @Valid @RequestBody UpdateProgressNotificationRequest req) {
         ProgressNotificationDto dto = progressNotificationService.update(id, req);
         return ResponseEntity.ok(dto);
@@ -50,7 +50,7 @@ public class ProgressNotificationController {
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Deleted successfully", content = @Content)
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         progressNotificationService.delete(id);
         return ResponseEntity.noContent().build();
@@ -72,7 +72,7 @@ public class ProgressNotificationController {
             @ApiResponse(responseCode = "200", description = "Found",
                     content = @Content(schema = @Schema(implementation = ProgressNotificationDto.class)))
     })
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/find-by-id")
     public ResponseEntity<ProgressNotificationDto> getById(@PathVariable UUID id) {
         ProgressNotificationDto dto = progressNotificationService.getById(id);
         return ResponseEntity.ok(dto);
@@ -83,7 +83,7 @@ public class ProgressNotificationController {
             @ApiResponse(responseCode = "200", description = "Found",
                     content = @Content(schema = @Schema(implementation = ProgressNotificationDto.class)))
     })
-    @GetMapping("/by-plan/{planId}")
+    @GetMapping("/{planId}/find-by-plan-id")
     public ResponseEntity<List<ProgressNotificationDto>> getByPlanId(@PathVariable UUID planId) {
         List<ProgressNotificationDto> list = progressNotificationService.getByPlanId(planId);
         return ResponseEntity.ok(list);

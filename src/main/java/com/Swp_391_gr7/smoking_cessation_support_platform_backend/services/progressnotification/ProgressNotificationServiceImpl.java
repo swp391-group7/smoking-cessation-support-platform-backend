@@ -19,9 +19,9 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
     private final ProgressNotificationRepository progressNotificationRepository;
 
     @Override
-    public ProgressNotificationDto create(CreateProgressNotificationReq req) {
+    public ProgressNotificationDto create(UUID planId, CreateProgressNotificationReq req) {
         ProgressNotification entity = ProgressNotification.builder()
-                .planId(req.getPlanId())
+                .planId(planId)
                 .message(req.getMessage())
                 .channel(req.getChannel())
                 .type(req.getType())
