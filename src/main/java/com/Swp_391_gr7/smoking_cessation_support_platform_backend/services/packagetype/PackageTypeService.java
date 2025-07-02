@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PackageTypeService {
-    PackageTypeDto createPackageType(String name, CreatePackageTypeRequest request);
+    PackageTypeDto createPackageType( CreatePackageTypeRequest request);
     PackageTypeDto updatePackageType(UUID id, UpdatePackageTypeRequest request);
     List<PackageTypeDto> getAllPackageTypes();
     PackageTypeDto getPackageTypeById(UUID id);

@@ -42,12 +42,11 @@ public class PackageTypeController {
     })
     @PostMapping
     public ResponseEntity<?> createPackageType(
-            @RequestParam String name,
             @Valid @RequestBody CreatePackageTypeRequest request,
             Authentication authentication
     ) {
         if (isNotAdmin(authentication)) return forbiddenResponse();
-        PackageTypeDto dto = packageTypeService.createPackageType(name, request);
+        PackageTypeDto dto = packageTypeService.createPackageType(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -87,9 +86,8 @@ public class PackageTypeController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công")
     })
-    @GetMapping
-    public ResponseEntity<?> getAllPackageTypes(Authentication authentication) {
-        if (isNotAdmin(authentication)) return forbiddenResponse();
+    @GetMapping("get-all")
+    public ResponseEntity<?> getAllPackageTypes() {
         List<PackageTypeDto> dtos = packageTypeService.getAllPackageTypes();
         return ResponseEntity.ok(dtos);
     }
