@@ -86,9 +86,8 @@ public class PackageTypeController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lấy danh sách thành công")
     })
-    @GetMapping
-    public ResponseEntity<?> getAllPackageTypes(Authentication authentication) {
-        if (isNotAdmin(authentication)) return forbiddenResponse();
+    @GetMapping("get-all")
+    public ResponseEntity<?> getAllPackageTypes() {
         List<PackageTypeDto> dtos = packageTypeService.getAllPackageTypes();
         return ResponseEntity.ok(dtos);
     }
