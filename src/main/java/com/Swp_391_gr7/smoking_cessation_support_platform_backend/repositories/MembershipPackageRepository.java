@@ -26,4 +26,7 @@ public interface MembershipPackageRepository extends JpaRepository<Membership_Pa
 
     // Kiểm tra xem user có gói nào còn hiệu lực tại thời điểm hiện tại
     Optional<Membership_Package> findFirstByUserIdAndIsActiveTrueAndEndDateAfterOrderByEndDateDesc(UUID userId, LocalDateTime now);
+
+    List<Membership_Package> findAllByIsActiveTrueAndEndDateBefore(LocalDateTime date);
+
 }
