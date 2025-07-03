@@ -48,6 +48,8 @@ public class SecurityConfig {
                                 "/blogs/display-8-blog",
 //                                "/roles/**",
 //                                "/users/**", // Thêm đường dẫn cho user
+                                "/package-types/get-all", // Thêm đường dẫn cho package types
+                                "/api/payments/**",
                                 "/blogs/display-all-blog",
                                 "/surveys/{surveyId}/detail**", // Thêm đường dẫn cho survey
                                 "/coaches",// Thêm đường dẫn cho guest xem  coach

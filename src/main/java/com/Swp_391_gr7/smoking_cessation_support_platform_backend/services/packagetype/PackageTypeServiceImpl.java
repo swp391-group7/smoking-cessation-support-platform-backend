@@ -19,10 +19,15 @@ public class PackageTypeServiceImpl implements PackageTypeService {
     private final PackageTypeRepository packageTypeRepository;
 
     @Override
-    public PackageTypeDto createPackageType(String name, CreatePackageTypeRequest request) {
+    public PackageTypeDto createPackageType(CreatePackageTypeRequest request) {
         Package_Types entity = Package_Types.builder()
-                .name(name)
+                .name(request.getName())
                 .description(request.getDescription())
+                .des1(request.getDes1())
+                .des2(request.getDes2())
+                .des3(request.getDes3())
+                .des4(request.getDes4())
+                .des5(request.getDes5())
                 .price(request.getPrice())
                 .duration(request.getDuration())
                 .createAt(LocalDateTime.now())
@@ -71,6 +76,11 @@ public class PackageTypeServiceImpl implements PackageTypeService {
                 .id(entity.getId())
                 .name(entity.getName())
                 .description(entity.getDescription())
+                .des1(entity.getDes1())
+                .des2(entity.getDes2())
+                .des3(entity.getDes3())
+                .des4(entity.getDes4())
+                .des5(entity.getDes5())
                 .price(entity.getPrice())
                 .duration(entity.getDuration())
                 .createAt(entity.getCreateAt())
