@@ -140,6 +140,7 @@
 
 
 
+
 	</dependencies>
 
 	<build>
@@ -184,6 +185,15 @@
 					<suiteXmlFiles>
 						<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
 					</suiteXmlFiles>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<configuration>
+					<dockerHost>tcp://remote-docker-host:2376</dockerHost>
+					<certPath>/path/to/certs</certPath>
 				</configuration>
 			</plugin>
 
