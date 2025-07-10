@@ -18,8 +18,7 @@ import java.util.UUID;
 @Getter
 public class Cessation_Progress {
     @Id  // Khóa chính UUID
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
@@ -28,11 +27,11 @@ public class Cessation_Progress {
             foreignKey = @ForeignKey(name = "fk_progress_plan"))
     private Quit_Plan plan;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_step_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_progress_plan_step"))
+    private Quit_Plan_Step planStep;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Người dùng
-    @JoinColumn (name = "user_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_quitplan_user"))
-    private User user ;
 
 
     @CreationTimestamp

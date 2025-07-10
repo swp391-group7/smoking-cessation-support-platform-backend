@@ -47,6 +47,11 @@ public class Quit_Plan {
     @Column(length = 50)
     private String status;  // Trạng thái
 
+    @Column(nullable = false)
+    private Integer currentZeroStreak; // chuỗi hiện tại
+
+    @Column(nullable = false)
+    private Integer maxZeroStreak;     // chuỗi dài nhất từ trước đến nay
 
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)

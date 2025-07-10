@@ -23,4 +23,6 @@ public class QuitPlanDto {
     private LocalDateTime createAt;
     private String status;
     private LocalDateTime updatedAt;
+    private Integer currentZeroStreak;
+    private Integer maxZeroStreak;
 }
