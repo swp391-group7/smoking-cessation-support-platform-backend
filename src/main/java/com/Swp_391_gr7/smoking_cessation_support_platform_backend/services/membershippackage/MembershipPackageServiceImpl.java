@@ -12,6 +12,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.U
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -92,6 +93,20 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
                 .findFirstByUserIdAndIsActiveTrueOrderByCreateAtDesc(userId)
                 .map(this::toDto)
                 .orElseThrow(() -> new RuntimeException("No active package found for user"));
+    }
+    @Override
+    public List<UUID> getAllActiveUserIds() {
+        // Gọi repository custom query để lấy userId duy nhất
+        return membershipPackageRepository
+                .findDistinctUserIdsWithActiveMembership(LocalDateTime.now());
+    }
+    @Override
+    public boolean hasActivePackageByUser(UUID userId) {
+        return membershipPackageRepository
+                .findFirstByUserIdAndIsActiveTrueAndEndDateAfterOrderByEndDateDesc(
+                        userId, LocalDateTime.now()
+                )
+                .isPresent();
     }
 
     private MembershipPackageDto toDto(Membership_Package e) {

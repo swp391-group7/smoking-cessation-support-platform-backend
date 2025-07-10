@@ -20,4 +20,6 @@ public interface MembershipPackageService {
     MembershipPackageDto getLatestByUser(UUID userId);
 
     MembershipPackageDto getActivePackageByUser(UUID userId);
+    List<UUID> getAllActiveUserIds();
+    boolean hasActivePackageByUser(UUID userId);
 }
