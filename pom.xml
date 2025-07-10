@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -93,28 +93,28 @@
 		</dependency>
 
 			<!-- TestNG -->
-			<dependency>
-				<groupId>org.testng</groupId>
-				<artifactId>testng</artifactId>
-				<version>7.8.0</version>
-				<scope>test</scope>
-			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.testng</groupId>-->
+<!--				<artifactId>testng</artifactId>-->
+<!--				<version>7.8.0</version>-->
+<!--				<scope>test</scope>-->
+<!--			</dependency>-->
 
 			<!-- Mockito core -->
-			<dependency>
-				<groupId>org.mockito</groupId>
-				<artifactId>mockito-core</artifactId>
-				<version>5.4.0</version>
-				<scope>test</scope>
-			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>org.mockito</groupId>-->
+<!--				<artifactId>mockito-core</artifactId>-->
+<!--				<version>5.4.0</version>-->
+<!--				<scope>test</scope>-->
+<!--			</dependency>-->
 
 			<!-- Nếu cần hỗ trợ annotation @Mock, @InjectMocks tự động khởi -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-testng</artifactId>
-			<version>0.5.2</version>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mockito</groupId>-->
+<!--			<artifactId>mockito-testng</artifactId>-->
+<!--			<version>0.5.2</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.google.firebase</groupId>
@@ -170,32 +170,32 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
-<!--				<dependencies>-->
-<!--					<dependency>-->
-<!--						<groupId>org.apache.maven.surefire</groupId>-->
-<!--						<artifactId>surefire-testng</artifactId>-->
-<!--						<version>3.0.0-M5</version>-->
-<!--					</dependency>-->
-<!--				</dependencies>-->
-				<configuration>
-					<suiteXmlFiles>
-						<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-					</suiteXmlFiles>
-				</configuration>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-surefire-plugin</artifactId>-->
+<!--				<version>3.0.0-M5</version>-->
+<!--&lt;!&ndash;				<dependencies>&ndash;&gt;-->
+<!--&lt;!&ndash;					<dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;						<groupId>org.apache.maven.surefire</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<artifactId>surefire-testng</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<version>3.0.0-M5</version>&ndash;&gt;-->
+<!--&lt;!&ndash;					</dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;				</dependencies>&ndash;&gt;-->
+<!--				<configuration>-->
+<!--					<suiteXmlFiles>-->
+<!--						<suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
+<!--					</suiteXmlFiles>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<configuration>
-					<dockerHost>tcp://remote-docker-host:2376</dockerHost>
-					<certPath>/path/to/certs</certPath>
-				</configuration>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>com.spotify</groupId>-->
+<!--				<artifactId>dockerfile-maven-plugin</artifactId>-->
+<!--				<configuration>-->
+<!--					<dockerHost>tcp://remote-docker-host:2376</dockerHost>-->
+<!--					<certPath>/path/to/certs</certPath>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 
 
 		</plugins>

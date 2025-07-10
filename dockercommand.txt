@@ -1,0 +1,5 @@
+#run on port 8080
+docker run -p 8080:8080 smoking-cessation-support-platform-backend
+
+#build image
+docker build -t smoking-cessation-support-platform-backend .
