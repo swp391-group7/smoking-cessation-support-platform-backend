@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,8 @@ public class CesProgressServiceImpl implements CesProgressService {
     @Override
     public CesProgressDto create(CreateCesProgressRequest request) {
         log.info("Creating new cessation progress for plan: {}", request.getPlanId());
-// 1. Lấy plan và step từ DB
+
+        // 1. Lấy plan và step từ DB
         Quit_Plan plan = quitPlanRepository.findById(request.getPlanId())
                 .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + request.getPlanId()));
         Quit_Plan_Step step = quitPlanStepRepository.findById(request.getPlanStepId())
@@ -54,9 +56,22 @@ public class CesProgressServiceImpl implements CesProgressService {
             // Lưu vào database
             Cessation_Progress savedProgress = cesProgressRepository.save(progress);
 
-            int streak = getConsecutiveZeroDays(plan.getId());
-            plan.setCurrentZeroStreak(streak);
-            if (streak > plan.getMaxZeroStreak()) plan.setMaxZeroStreak(streak);
+            // Tính streak dựa vào method của plan
+            String method = plan.getMethod();
+            int currentStreak = 0;
+
+            if ("IMMEDIATE".equalsIgnoreCase(method)) {
+                currentStreak = calcZeroStreak(plan.getId());
+            } else if ("GRADUAL".equalsIgnoreCase(method)) {
+                currentStreak = calcGradualStreak(plan.getId());
+            } else {
+                log.warn("Unknown plan.method='{}', defaulting to zero-streak", method);
+                currentStreak = calcZeroStreak(plan.getId());
+            }
+
+            // Cập nhật plan
+            plan.setCurrentZeroStreak(currentStreak);
+            plan.setMaxZeroStreak(Math.max(plan.getMaxZeroStreak(), currentStreak));
             quitPlanRepository.save(plan);
 
             log.info("Successfully created cessation progress with ID: {}", savedProgress.getId());
@@ -284,6 +299,130 @@ public class CesProgressServiceImpl implements CesProgressService {
             }
             streak++;
         }
+        return streak;
+    }
+    private int calcZeroStreak(UUID planId) {
+        LocalDate today = LocalDate.now();
+        List<CesProgressRepository.DailyTotal> totals =
+                cesProgressRepository.findDailyTotalsByPlan(planId);
+
+        int streak = 0;
+        for (var dt : totals) {
+            if (!dt.getLogDate().isEqual(today.minusDays(streak)) || dt.getTotalCigarettes() > 0) {
+                break;
+            }
+            streak++;
+        }
+        return streak;
+    }
+    /**
+     * Tính chuỗi ngày đạt target (cho GRADUAL method)
+     * @param planId ID của plan
+     * @return số ngày liên tiếp đạt target theo từng step
+     */
+    private int calcGradualStreak(UUID planId) {
+        Quit_Plan plan = quitPlanRepository.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
+
+        List<Quit_Plan_Step> steps =
+                quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId);
+
+        if (steps.isEmpty()) {
+            return 0;
+        }
+
+        // LẤY DANH SÁCH PROGRESS RECORDS, KHÔNG PHẢI MAP NGÀY
+        List<CesProgressRepository.DailyTotal> dailyTotals =
+                cesProgressRepository.findDailyTotalsByPlan(planId);
+
+        // Sắp xếp theo ngày giảm dần (mới nhất trước)
+        dailyTotals.sort((a, b) -> b.getLogDate().compareTo(a.getLogDate()));
+
+        int streak = 0;
+        LocalDate expectedDate = LocalDate.now();
+
+        // Duyệt qua từng ngày có progress record
+        for (CesProgressRepository.DailyTotal dailyTotal : dailyTotals) {
+            LocalDate recordDate = dailyTotal.getLogDate();
+
+            // Nếu ngày này không phải ngày mong đợi tiếp theo → PHÁ CHUỖI
+            if (!recordDate.isEqual(expectedDate)) {
+                break;
+            }
+
+            // Tìm step tương ứng với ngày này
+            Quit_Plan_Step currentStep = null;
+            for (Quit_Plan_Step step : steps) {
+                if (!recordDate.isBefore(step.getStepStartDate()) &&
+                        !recordDate.isAfter(step.getStepEndDate())) {
+                    currentStep = step;
+                    break;
+                }
+            }
+
+            // Nếu không có step cho ngày này → PHÁ CHUỖI
+            if (currentStep == null) {
+                break;
+            }
+
+            // Kiểm tra có đạt target không
+            int totalCigarettes = dailyTotal.getTotalCigarettes();
+            if (totalCigarettes > currentStep.getTargetCigarettesPerDay()) {
+                break; // PHÁ CHUỖI
+            }
+
+            // Đạt target → tăng streak
+            streak++;
+            expectedDate = expectedDate.minusDays(1);
+        }
+
+        return streak;
+    }
+    private Quit_Plan_Step findStepForDate(LocalDate date, List<Quit_Plan_Step> steps) {
+        for (Quit_Plan_Step step : steps) {
+            if (!date.isBefore(step.getStepStartDate()) &&
+                    !date.isAfter(step.getStepEndDate())) {
+                return step;
+            }
+        }
+        return null;
+    }
+    private int calcGradualStreakFromLastRecord(UUID planId) {
+        List<CesProgressRepository.DailyTotal> dailyTotals =
+                cesProgressRepository.findDailyTotalsByPlan(planId);
+
+        if (dailyTotals.isEmpty()) {
+            return 0;
+        }
+
+        // Sắp xếp theo ngày giảm dần
+        dailyTotals.sort((a, b) -> b.getLogDate().compareTo(a.getLogDate()));
+
+        List<Quit_Plan_Step> steps =
+                quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId);
+
+        int streak = 0;
+        LocalDate previousDate = null;
+
+        for (CesProgressRepository.DailyTotal dailyTotal : dailyTotals) {
+            LocalDate currentDate = dailyTotal.getLogDate();
+
+            // Kiểm tra tính liên tiếp (trừ record đầu tiên)
+            if (previousDate != null && !currentDate.isEqual(previousDate.minusDays(1))) {
+                break; // Có gap → phá chuỗi
+            }
+
+            // Tìm step và kiểm tra target
+            Quit_Plan_Step currentStep = findStepForDate(currentDate, steps);
+            if (currentStep == null ||
+                    dailyTotal.getTotalCigarettes() > currentStep.getTargetCigarettesPerDay()) {
+                break;
+            }
+
+            streak++;
+            previousDate = currentDate;
+        }
+
         return streak;
     }
 
