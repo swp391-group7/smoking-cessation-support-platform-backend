@@ -21,4 +21,17 @@ public interface CesProgressRepository extends JpaRepository<Cessation_Progress,
     // 4. Lấy tất cả progress trong một ngày nhất định (logDate)
     List<Cessation_Progress> findByLogDate(LocalDate logDate);
     List<Cessation_Progress> findByPlanIdOrderByLogDateDesc(UUID planId);
+
+    interface DailyTotal {
+        LocalDate getLogDate();
+        Integer getTotalCigarettes();
+    }
+
+    // Query tổng số thuốc theo ngày, theo planId
+    @Query("SELECT cp.logDate AS logDate, SUM(cp.cigarettesSmoked) AS totalCigarettes " +
+            "FROM Cessation_Progress cp " +
+            "WHERE cp.plan.id = :planId " +
+            "GROUP BY cp.logDate " +
+            "ORDER BY cp.logDate DESC")
+    List<DailyTotal> findDailyTotalsByPlan(@Param("planId") UUID planId);
 }

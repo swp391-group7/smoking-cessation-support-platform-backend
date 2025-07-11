@@ -48,7 +48,7 @@ public class CesProgressServiceImpl implements CesProgressService {
                     .mood(request.getMood())
                     .cigarettesSmoked(request.getCigarettesSmoked())
                     .note(request.getNote())
-                    .logDate(LocalDateTime.now().toLocalDate())
+                    .logDate(LocalDate.now())
                     .build();
 
             // Lưu vào database
@@ -269,21 +269,24 @@ public class CesProgressServiceImpl implements CesProgressService {
      */
     public Integer getConsecutiveZeroDays(UUID planId) {
         LocalDate today = LocalDate.now();
-        // Lấy tất cả tiến độ của kế hoạch, chỉ quan tâm logDate và cigarettesSmoked
-        List<Cessation_Progress> logs = cesProgressRepository
-                .findByPlanIdOrderByLogDateDesc(planId);
+        List<CesProgressRepository.DailyTotal> totals =
+                cesProgressRepository.findDailyTotalsByPlan(planId);
 
-        int count = 0;
-        for (Cessation_Progress log : logs) {
-            if (log.getLogDate().isEqual(today.minusDays(count))
-                    && (log.getCigarettesSmoked() == null || log.getCigarettesSmoked() == 0)) {
-                count++;
-            } else {
+        int streak = 0;
+        for (CesProgressRepository.DailyTotal dt : totals) {
+            // Nếu đã qua ngày liên tiếp (vd: ngày hôm nay − streak)
+            if (!dt.getLogDate().isEqual(today.minusDays(streak))) {
                 break;
             }
+            // Nếu tổng thuốc > 0 thì chuỗi bị phá
+            if (dt.getTotalCigarettes() > 0) {
+                break;
+            }
+            streak++;
         }
-        return count;
+        return streak;
     }
+
 
     /**
      * Chuyển đổi entity sang DTO
