@@ -34,4 +34,5 @@ public interface CesProgressRepository extends JpaRepository<Cessation_Progress,
             "GROUP BY cp.logDate " +
             "ORDER BY cp.logDate DESC")
     List<DailyTotal> findDailyTotalsByPlan(@Param("planId") UUID planId);
+    List<Cessation_Progress> findAllByPlanIdOrderByLogDateAsc(UUID planId);
 }

@@ -41,4 +41,9 @@ public interface CesProgressService {
      * @param id UUID của tiến trình cần xóa
      */
     void delete(UUID id);
+
+    List<CesProgressDto> getAllByPlanId(UUID planId);
+
+    int countUniqueProgress(UUID planId);
+
 }

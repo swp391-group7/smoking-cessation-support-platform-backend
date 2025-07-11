@@ -280,4 +280,31 @@ public class CesProgressController {
         BigDecimal saved = cesProgressService.getMoneySaved(planId);
         return ResponseEntity.ok(saved);
     }
+
+    @GetMapping("/plan/{planId}/all")
+    public ResponseEntity<List<CesProgressDto>> getAllProgressByPlan(
+            @PathVariable UUID planId) {
+        List<CesProgressDto> list = cesProgressService.getAllByPlanId(planId);
+        return ResponseEntity.ok(list);
+    }
+
+
+    @Operation(summary = "Count unique progress days",
+            description = "Đếm số ngày có bản ghi progress duy nhất của một kế hoạch")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Count retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content)
+    })
+    @GetMapping("/statistics/unique-days/{planId}")
+    public ResponseEntity<Integer> countUniqueProgress(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId) {
+        int count = cesProgressService.countUniqueProgress(planId);
+        return ResponseEntity.ok(count);
+    }
+
+
+
 }

@@ -499,6 +499,42 @@ public class CesProgressServiceImpl implements CesProgressService {
 
         return priceEach.multiply(BigDecimal.valueOf(avoided));
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<CesProgressDto> getAllByPlanId(UUID planId) {
+        // 1. Kiểm tra plan tồn tại
+        if (!quitPlanRepository.existsById(planId)) {
+            throw new RuntimeException("Plan not found: " + planId);
+        }
+        // 2. Lấy tất cả progress entity theo planId
+        List<Cessation_Progress> progressList =
+                cesProgressRepository.findAllByPlanIdOrderByLogDateAsc(planId);
+
+        // 3. Map sang DTO
+        return progressList.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+    /**
+     * Đếm số ngày có bản ghi progress duy nhất của một plan
+     * (không tính các bản ghi cùng ngày)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public int countUniqueProgress(UUID planId) {
+        // 1. Lấy tất cả progress cho plan (sắp theo logDate)
+        List<Cessation_Progress> all = cesProgressRepository.findAllByPlanIdOrderByLogDateAsc(planId);
+
+        // 2. Dùng Set để giữ các ngày duy nhất
+        long uniqueDays = all.stream()
+                .map(Cessation_Progress::getLogDate)
+                .distinct()
+                .count();
+
+        return (int) uniqueDays;
+    }
+
+
 
 
 

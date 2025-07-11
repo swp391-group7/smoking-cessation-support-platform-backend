@@ -194,4 +194,26 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .createAt(entity.getCreateAt())
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getCurrentZeroStreak(UUID userId) {
+        Quit_Plan plan = quitPlanRepository
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (plan == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active plan found for user");
+        }
+        return plan.getCurrentZeroStreak();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getMaxZeroStreak(UUID userId) {
+        Quit_Plan plan = quitPlanRepository
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (plan == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active plan found for user");
+        }
+        return plan.getMaxZeroStreak();
+    }
+
 }
