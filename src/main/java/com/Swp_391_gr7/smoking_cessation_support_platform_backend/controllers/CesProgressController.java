@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -245,5 +246,38 @@ public class CesProgressController {
 
         Map<LocalDate, Integer> statistics = cesProgressService.getCigarettesByDateRange(startDate, endDate);
         return ResponseEntity.ok(statistics);
+    }
+    @Operation(summary = "Get total avoided cigarettes",
+            description = "Tổng số điếu thuốc đã tránh được kể từ khi bắt đầu kế hoạch.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Avoided cigarettes calculated successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/avoided/{planId}")
+    public ResponseEntity<Integer> getAvoidedCigarettes(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId) {
+        int avoided = cesProgressService.getAvoidedCigarettes(planId);
+        return ResponseEntity.ok(avoided);
+    }
+
+    @Operation(summary = "Get money saved",
+            description = "Số tiền tiết kiệm được dựa trên số điếu tránh và giá tiền mỗi điếu.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Money saved calculated successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BigDecimal.class))),
+            @ApiResponse(responseCode = "404", description = "Plan or survey not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/money-saved/{planId}")
+    public ResponseEntity<BigDecimal> getMoneySaved(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId) {
+        BigDecimal saved = cesProgressService.getMoneySaved(planId);
+        return ResponseEntity.ok(saved);
     }
 }

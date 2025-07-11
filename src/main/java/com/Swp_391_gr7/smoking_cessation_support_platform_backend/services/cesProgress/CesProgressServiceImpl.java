@@ -6,14 +6,17 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.ces
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Cessation_Progress;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan_Step;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CesProgressRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanStepRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -31,6 +34,7 @@ public class CesProgressServiceImpl implements CesProgressService {
     private final CesProgressRepository cesProgressRepository;
     private final QuitPlanRepository quitPlanRepository;               // thêm
     private final QuitPlanStepRepository quitPlanStepRepository;
+    private final UserSurveyRepository userSurveyRepository;
     @Override
     public CesProgressDto create(CreateCesProgressRequest request) {
         log.info("Creating new cessation progress for plan: {}", request.getPlanId());
@@ -425,6 +429,83 @@ public class CesProgressServiceImpl implements CesProgressService {
 
         return streak;
     }
+
+    public int getAvoidedCigarettes(UUID planId) {
+        // 1. Lấy plan để có startDate
+        Quit_Plan plan = quitPlanRepository.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
+        LocalDate startDate = plan.getStartDate();
+
+        // 2. Lấy tất cả steps
+        List<Quit_Plan_Step> steps =
+                quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId);
+
+        // 3. Lấy các bản ghi progress và tìm ngày cuối cùng
+        List<CesProgressRepository.DailyTotal> dailyTotals =
+                cesProgressRepository.findDailyTotalsByPlan(planId);
+        LocalDate lastRecordDate = dailyTotals.stream()
+                .map(CesProgressRepository.DailyTotal::getLogDate)
+                .max(LocalDate::compareTo)
+                .orElse(startDate);
+
+        // 4. Chuyển list thành map ngày -> actual
+        Map<LocalDate, Integer> actualByDate = dailyTotals.stream()
+                .collect(Collectors.toMap(
+                        CesProgressRepository.DailyTotal::getLogDate,
+                        CesProgressRepository.DailyTotal::getTotalCigarettes
+                ));
+
+        int totalAvoided = 0;
+        // 5. Duyệt từng ngày từ startDate đến lastRecordDate
+        for (LocalDate curr = startDate; !curr.isAfter(lastRecordDate); curr = curr.plusDays(1)) {
+            final LocalDate date = curr;   // phải là effectively final để dùng trong lambda
+            int actual = actualByDate.getOrDefault(date, 0);
+
+            // tìm đúng step chứa ngày này
+            Quit_Plan_Step stepForDate = steps.stream()
+                    .filter(s ->
+                            !date.isBefore(s.getStepStartDate()) &&
+                                    !date.isAfter(s.getStepEndDate())
+                    )
+                    .findFirst()
+                    .orElse(null);
+
+            if (stepForDate != null) {
+                int target = stepForDate.getTargetCigarettesPerDay();
+                int avoided = target - actual;
+                if (avoided > 0) {
+                    totalAvoided += avoided;
+                }
+            }
+        }
+
+        return totalAvoided;
+    }
+
+
+    public BigDecimal getMoneySaved(UUID planId) {
+        int avoided = getAvoidedCigarettes(planId);
+        if (avoided == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        Quit_Plan plan = quitPlanRepository.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
+        UUID userId = plan.getUser().getId();
+
+        User_Survey survey = userSurveyRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User survey not found for user: " + userId));
+        BigDecimal priceEach = survey.getPriceEach();
+
+        return priceEach.multiply(BigDecimal.valueOf(avoided));
+    }
+
+
+
+
+
+
+
 
 
     /**
