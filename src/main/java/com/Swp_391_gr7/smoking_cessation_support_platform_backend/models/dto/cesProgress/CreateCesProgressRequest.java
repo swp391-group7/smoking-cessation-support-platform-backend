@@ -18,4 +18,5 @@ public class CreateCesProgressRequest {
     private String mood;
     private Integer cigarettesSmoked;
     private String note;
+
 }

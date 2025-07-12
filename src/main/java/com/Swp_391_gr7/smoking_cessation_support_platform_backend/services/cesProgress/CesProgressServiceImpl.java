@@ -556,6 +556,7 @@ public class CesProgressServiceImpl implements CesProgressService {
                 .mood(progress.getMood())
                 .cigarettesSmoked(progress.getCigarettesSmoked())
                 .note(progress.getNote())
+                .logDate(progress.getLogDate())
                 .build();
     }
 }

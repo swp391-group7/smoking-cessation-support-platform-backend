@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -19,4 +20,5 @@ public class CesProgressDto {
     private String mood;
     private Integer cigarettesSmoked;
     private String note;
+    private LocalDate logDate;
 }
