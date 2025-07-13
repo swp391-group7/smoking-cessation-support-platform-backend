@@ -28,7 +28,7 @@ public class Badges {
     @Column(name = "badge_description", nullable = false, length = 255)
     private String badgeDescription;
 
-    @Column(name="badge_image_url", nullable = false, length = 255)
+    @Column(name="badge_image_url", nullable = false, length = 1000000)
     private String badgeImageUrl;
 
     @Column(name = "condition", nullable = false)
