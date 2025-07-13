@@ -12,7 +12,15 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_badges")
+@Table(
+        name = "user_badges",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uc_user_badge_user_badge",
+                        columnNames = { "user_id", "badge_id" }
+                )
+        }
+)
 public class UserBadge {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

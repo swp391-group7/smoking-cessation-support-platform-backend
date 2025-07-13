@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesProgress.CesProgressServiceImpl;
@@ -45,24 +46,31 @@ public class CesProgressController {
 
     @Operation(
             summary = "Create a new cessation progress",
-            description = "Tạo mới tiến trình cai thuốc cho user trong một bước kế hoạch. Trả về dữ liệu DTO của tiến trình vừa tạo."
+            description = "Tạo mới tiến trình cai thuốc cho user trong một bước kế hoạch. Trả về DTO của tiến trình vừa tạo và danh sách huy hiệu mới."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Progress created successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CesProgressDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data",
-                    content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Progress created successfully with badges",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CreateProgressResponse.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
     @PostMapping("/create")
-    public ResponseEntity<CesProgressDto> createProgress(
+    public ResponseEntity<CreateProgressResponse> createProgress(
             @Valid @RequestBody CreateCesProgressRequest request) {
 
-        CesProgressDto dto = cesProgressService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        // bây giờ service.create(...) trả về CreateProgressResponse
+        CreateProgressResponse resp = cesProgressService.create(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(resp);
     }
+
 
     @Operation(
             summary = "Update cessation progress",

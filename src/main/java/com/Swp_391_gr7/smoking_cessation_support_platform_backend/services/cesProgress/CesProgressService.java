@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesP
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public interface CesProgressService {
      * @param request thông tin tạo mới
      * @return DTO của tiến trình vừa tạo
      */
-    CesProgressDto create(CreateCesProgressRequest request);
+    CreateProgressResponse create(CreateCesProgressRequest request);
 
     /**
      * Cập nhật tiến trình đã tồn tại

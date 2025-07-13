@@ -1,16 +1,13 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesProgress;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeDetailDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Cessation_Progress;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan_Step;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CesProgressRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanStepRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.*;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.*;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userbadge.UserBadgeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,18 +33,21 @@ public class CesProgressServiceImpl implements CesProgressService {
     private final QuitPlanRepository quitPlanRepository;               // thêm
     private final QuitPlanStepRepository quitPlanStepRepository;
     private final UserSurveyRepository userSurveyRepository;
+
+    private final UserBadgeService userBadgeService;    // mới
+    private final BadgesRepository badgesRepository;     // để query badge theo condition
     @Override
-    public CesProgressDto create(CreateCesProgressRequest request) {
+    public CreateProgressResponse create(CreateCesProgressRequest request) {
         log.info("Creating new cessation progress for plan: {}", request.getPlanId());
 
-        // 1. Lấy plan và step từ DB
-        Quit_Plan plan = quitPlanRepository.findById(request.getPlanId())
-                .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + request.getPlanId()));
-        Quit_Plan_Step step = quitPlanStepRepository.findById(request.getPlanStepId())
-                .orElseThrow(() -> new RuntimeException("Plan step not found with ID: " + request.getPlanStepId()));
-
         try {
-            // Tạo entity từ request
+            // 1. Lấy plan và step từ DB
+            Quit_Plan plan = quitPlanRepository.findById(request.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + request.getPlanId()));
+            Quit_Plan_Step step = quitPlanStepRepository.findById(request.getPlanStepId())
+                    .orElseThrow(() -> new RuntimeException("Plan step not found with ID: " + request.getPlanStepId()));
+
+            // 2. Tạo entity và lưu vào DB
             Cessation_Progress progress = Cessation_Progress.builder()
                     .plan(plan)
                     .planStep(step)
@@ -56,14 +57,11 @@ public class CesProgressServiceImpl implements CesProgressService {
                     .note(request.getNote())
                     .logDate(LocalDate.now())
                     .build();
-
-            // Lưu vào database
             Cessation_Progress savedProgress = cesProgressRepository.save(progress);
 
-            // Tính streak dựa vào method của plan
+            // 3. Tính currentStreak dựa trên method
             String method = plan.getMethod();
-            int currentStreak = 0;
-
+            int currentStreak;
             if ("IMMEDIATE".equalsIgnoreCase(method)) {
                 currentStreak = calcZeroStreak(plan.getId());
             } else if ("GRADUAL".equalsIgnoreCase(method)) {
@@ -73,13 +71,35 @@ public class CesProgressServiceImpl implements CesProgressService {
                 currentStreak = calcZeroStreak(plan.getId());
             }
 
-            // Cập nhật plan
+            // 4. Cập nhật plan
             plan.setCurrentZeroStreak(currentStreak);
             plan.setMaxZeroStreak(Math.max(plan.getMaxZeroStreak(), currentStreak));
             quitPlanRepository.save(plan);
 
+            // 5. Lấy badge có condition == currentStreak và gán cho user
+            UUID userId = plan.getUser().getId();
+            List<Badges> toAward = badgesRepository.findAllByCondition(currentStreak);
+
+            List<BadgeDetailDto> newBadges = new ArrayList<>();
+            for (Badges badge : toAward) {
+                userBadgeService.assignBadge(userId, badge.getId());
+                newBadges.add(BadgeDetailDto.builder()
+                        .id(badge.getId())
+                        .badgeName(badge.getBadgeName())
+                        .badgeDescription(badge.getBadgeDescription())
+                        .badgeImageUrl(badge.getBadgeImageUrl())
+                        .condition(badge.getCondition())
+                        .createdAt(badge.getCreatedAt())
+                        .build()
+                );
+            }
+
             log.info("Successfully created cessation progress with ID: {}", savedProgress.getId());
-            return mapToDto(savedProgress);
+            // 6. Trả về cả progress và danh sách badge mới
+            return new CreateProgressResponse(
+                    mapToDto(savedProgress),
+                    newBadges
+            );
 
         } catch (Exception e) {
             log.error("Error creating cessation progress: {}", e.getMessage(), e);
