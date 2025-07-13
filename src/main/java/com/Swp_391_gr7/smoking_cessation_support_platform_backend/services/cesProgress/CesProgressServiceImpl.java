@@ -5,6 +5,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.ces
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.*;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.*;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userbadge.UserBadgeService;
@@ -82,16 +83,19 @@ public class CesProgressServiceImpl implements CesProgressService {
 
             List<BadgeDetailDto> newBadges = new ArrayList<>();
             for (Badges badge : toAward) {
-                userBadgeService.assignBadge(userId, badge.getId());
-                newBadges.add(BadgeDetailDto.builder()
-                        .id(badge.getId())
-                        .badgeName(badge.getBadgeName())
-                        .badgeDescription(badge.getBadgeDescription())
-                        .badgeImageUrl(badge.getBadgeImageUrl())
-                        .condition(badge.getCondition())
-                        .createdAt(badge.getCreatedAt())
-                        .build()
-                );
+                UserBadgeDto ub = userBadgeService.assignBadge(userId, badge.getId());
+                if (ub != null) {
+                    newBadges.add(
+                            BadgeDetailDto.builder()
+                                    .id(badge.getId())
+                                    .badgeName(badge.getBadgeName())
+                                    .badgeDescription(badge.getBadgeDescription())
+                                    .badgeImageUrl(badge.getBadgeImageUrl())
+                                    .condition(badge.getCondition())
+                                    .createdAt(badge.getCreatedAt())
+                                    .build()
+                    );
+                }
             }
 
             log.info("Successfully created cessation progress with ID: {}", savedProgress.getId());
