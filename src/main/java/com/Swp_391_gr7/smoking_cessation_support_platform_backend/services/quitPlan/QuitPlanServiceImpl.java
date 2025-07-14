@@ -172,14 +172,32 @@ public class QuitPlanServiceImpl implements QuitPlanService {
 
     @Override
     public QuitPlanDto updateLatestDraft(UUID userId, UpdateQuitPlanRequest request) {
-        Quit_Plan latest = quitPlanRepository.findByUserIdAndStatusIgnoreCase(userId, "draft").stream()
+        // 1. Đóng tất cả plan đang active hiện có
+        List<Quit_Plan> activePlans = quitPlanRepository
+                .findByUserIdAndStatusIgnoreCase(userId, "active");
+        if (!activePlans.isEmpty()) {
+            for (Quit_Plan p : activePlans) {
+                p.setStatus("completed");
+            }
+            // lưu batch để tránh gọi save nhiều lần
+            quitPlanRepository.saveAll(activePlans);
+        }
+
+        // 2. Tìm draft mới nhất
+        Quit_Plan latest = quitPlanRepository
+                .findByUserIdAndStatusIgnoreCase(userId, "draft").stream()
                 .max(Comparator.comparing(Quit_Plan::getCreateAt))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No draft found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No draft found"));
+
+        // 3. Chuyển draft đó thành active
         latest.setTargetDate(request.getTargetDate());
         latest.setStatus("active");
         Quit_Plan updated = quitPlanRepository.save(latest);
+
         return mapToDto(updated);
     }
+
 
     private QuitPlanDto mapToDto(Quit_Plan entity) {
         return QuitPlanDto.builder()
