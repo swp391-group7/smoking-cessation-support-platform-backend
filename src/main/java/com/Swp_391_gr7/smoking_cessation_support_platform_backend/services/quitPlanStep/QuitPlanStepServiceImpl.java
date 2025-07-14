@@ -45,7 +45,9 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
         int next = existing.stream().map(Quit_Plan_Step::getStepNumber).max(Comparator.naturalOrder()).map(n->n+1).orElse(1);
         step.setStepNumber(next);
         step.setPlan(plan);
-        step.setStepStatus(computeStatus(start, end));
+        if (step.getStepStatus() == null) {
+            step.setStepStatus(computeStatus(start, end));
+        }
         Quit_Plan_Step saved = stepRepo.save(step);
         adjustPlanBounds(plan);
         return saved;
@@ -63,6 +65,7 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
                 .stepEndDate(plan.getTargetDate())
                 .targetCigarettesPerDay(0)
                 .stepDescription("")
+                .stepStatus("draft") // Mặc định là draft
                 .plan(plan)
                 .build();
         return createStep(planId, step);
