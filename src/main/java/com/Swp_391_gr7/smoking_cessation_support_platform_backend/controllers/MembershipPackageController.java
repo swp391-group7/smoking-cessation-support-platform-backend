@@ -166,4 +166,24 @@ public class MembershipPackageController {
         MembershipPackageDto dto = membershipPackageService.getActivePackageByUser(currentUserId);
         return ResponseEntity.ok(dto);
     }
+    @Operation(summary = "Gán coach cho gói membership đang active của user hiện tại")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Gán coach thành công",
+                    content = @Content(schema = @Schema(implementation = MembershipPackageDto.class))),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy gói hoặc coach", content = @Content)
+    })
+    @PutMapping("/active/assign-coach")
+    public ResponseEntity<MembershipPackageDto> assignCoachToCurrentUser(
+            @Valid @RequestBody UpdateMemberShipPackageRequest request
+    ) {
+        // Lấy userId từ token
+        UUID currentUserId = (UUID) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+
+        // Gọi service gán coach
+        MembershipPackageDto updated = membershipPackageService
+                .assignCoach(currentUserId, request.getCoachId());
+
+        return ResponseEntity.ok(updated);
+    }
 }

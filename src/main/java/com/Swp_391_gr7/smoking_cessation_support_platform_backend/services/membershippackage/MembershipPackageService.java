@@ -22,4 +22,5 @@ public interface MembershipPackageService {
     MembershipPackageDto getActivePackageByUser(UUID userId);
     List<UUID> getAllActiveUserIds();
     boolean hasActivePackageByUser(UUID userId);
+    MembershipPackageDto assignCoach(UUID userId, UUID coachId);
 }

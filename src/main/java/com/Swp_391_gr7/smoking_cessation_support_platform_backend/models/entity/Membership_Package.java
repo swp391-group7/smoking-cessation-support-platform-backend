@@ -25,6 +25,12 @@ public class Membership_Package {
             foreignKey = @ForeignKey(name = "fk_membership_user"))
     private User user;
 
+    // Coach đồng hành
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "coach_id", nullable = true,
+            foreignKey = @ForeignKey(name = "fk_membership_coach"))
+    private Coach coach;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "package_type_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_membership_package_type"))

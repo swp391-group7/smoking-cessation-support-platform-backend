@@ -86,9 +86,7 @@ public class UserController {
 
     @GetMapping("/get/{userId}")
     public ResponseEntity<?> getUserById(@PathVariable UUID userId, Authentication authentication) {
-        if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
-        }
+
         UserDto dto = userService.getUserById(userId);
         return ResponseEntity.ok(dto);
     }

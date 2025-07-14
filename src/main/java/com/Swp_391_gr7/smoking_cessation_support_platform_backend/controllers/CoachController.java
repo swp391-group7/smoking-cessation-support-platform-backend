@@ -52,7 +52,7 @@ public class CoachController {
             @ApiResponse(responseCode = "403", description = "Không có quyền tạo"),
             @ApiResponse(responseCode = "409", description = "Coach đã tồn tại")
     })
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createCoach(
             @Valid @RequestBody CoachDto dto,
             Authentication authentication
@@ -97,7 +97,7 @@ public class CoachController {
             @ApiResponse(responseCode = "200", description = "Danh sách Coach",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CoachDto.class))))
     })
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CoachDto>> getAllCoaches() {
         return ResponseEntity.ok(coachService.getAllCoaches());
     }

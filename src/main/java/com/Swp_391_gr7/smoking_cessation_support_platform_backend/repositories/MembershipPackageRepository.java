@@ -40,5 +40,5 @@ public interface MembershipPackageRepository extends JpaRepository<Membership_Pa
     List<UUID> findDistinctUserIdsWithActiveMembership(
             @Param("now") LocalDateTime now
     );
-
+    Optional<Membership_Package> findByUserIdAndIsActiveTrue(UUID userId);
 }
