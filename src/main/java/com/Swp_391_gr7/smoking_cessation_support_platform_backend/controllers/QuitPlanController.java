@@ -194,4 +194,34 @@ public class QuitPlanController {
         QuitPlanDto dto = quitPlanService.getActivePlanByUserId(userId);
         return ResponseEntity.ok(dto);
     }
+// Ngay sau phương thức getActivePlan (của userId khác):
+
+    @Operation(summary = "Get current zero streak of active plan",
+            description = "Lấy số ngày không hút gần nhất (currentZeroStreak) của plan đang active.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Current zero streak retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "No active plan found", content = @Content)
+    })
+    @GetMapping("/active/current-zero-streak")
+    public ResponseEntity<Integer> getCurrentZeroStreak() {
+        Integer streak = quitPlanService.getCurrentZeroStreak(getCurrentUserId());
+        return ResponseEntity.ok(streak);
+    }
+
+    @Operation(summary = "Get max zero streak of active plan",
+            description = "Lấy chuỗi ngày không hút dài nhất (maxZeroStreak) của plan đang active.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Max zero streak retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "No active plan found", content = @Content)
+    })
+    @GetMapping("/active/max-zero-streak")
+    public ResponseEntity<Integer> getMaxZeroStreak() {
+        Integer max = quitPlanService.getMaxZeroStreak(getCurrentUserId());
+        return ResponseEntity.ok(max);
+    }
+
 }

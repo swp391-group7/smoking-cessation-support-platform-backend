@@ -94,7 +94,6 @@ public class QuitPlanStepController {
                 .stepEndDate(request.getStepEndDate())
                 .targetCigarettesPerDay(request.getTargetCigarettesPerDay())
                 .stepDescription(request.getStepDescription())
-                .stepStatus(request.getStatus())
                 .build();
         Quit_Plan_Step saved = stepService.createStep(planId, entity);
         QuitPlanStepDto dto = QuitPlanStepDto.builder()

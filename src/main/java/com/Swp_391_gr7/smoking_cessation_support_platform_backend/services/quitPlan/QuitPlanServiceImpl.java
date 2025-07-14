@@ -45,6 +45,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .targetDate(request.getTargetDate())
                 .method(request.getMethod())
                 .status(request.getStatus())
+                .maxZeroStreak(0)
+                .currentZeroStreak(0)
                 .build();
         Quit_Plan saved = quitPlanRepository.save(plan);
         return mapToDto(saved);
@@ -155,6 +157,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .targetDate(LocalDate.now())
                 .method("GRADUAL")
                 .status("draft")
+                .currentZeroStreak(0)
+                .maxZeroStreak(0)
                 .build();
         Quit_Plan saved = quitPlanRepository.save(draft);
         return mapToDto(saved);
@@ -184,8 +188,32 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .startDate(entity.getStartDate())
                 .targetDate(entity.getTargetDate())
                 .method(entity.getMethod())
+                .currentZeroStreak(entity.getCurrentZeroStreak())
+                .maxZeroStreak(entity.getMaxZeroStreak())
                 .status(entity.getStatus())
                 .createAt(entity.getCreateAt())
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getCurrentZeroStreak(UUID userId) {
+        Quit_Plan plan = quitPlanRepository
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (plan == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active plan found for user");
+        }
+        return plan.getCurrentZeroStreak();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getMaxZeroStreak(UUID userId) {
+        Quit_Plan plan = quitPlanRepository
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (plan == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active plan found for user");
+        }
+        return plan.getMaxZeroStreak();
+    }
+
 }

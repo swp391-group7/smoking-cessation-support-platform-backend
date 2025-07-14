@@ -40,5 +40,7 @@ public interface QuitPlanService {
      * Cập nhật kế hoạch draft gần nhất của user.
      */
     QuitPlanDto updateLatestDraft(UUID userId, UpdateQuitPlanRequest request);
+    Integer getCurrentZeroStreak(UUID userId);
+    Integer getMaxZeroStreak(UUID userId);
 
 }

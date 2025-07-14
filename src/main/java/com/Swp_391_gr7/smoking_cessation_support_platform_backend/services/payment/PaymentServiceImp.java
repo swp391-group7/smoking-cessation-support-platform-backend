@@ -1,5 +1,7 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.payment;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.CreateMembershipPackageRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.membershippackage.MembershipPackageService;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;            // ← PayPal SDK
@@ -25,15 +27,17 @@ public class PaymentServiceImp implements PaymentService {
     private final com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PaymentRepository paymentRepo;
     private final com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository userRepo;
     private final com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PackageTypeRepository pkgRepo;
-
+    private final MembershipPackageService membershipPackageService;
     public PaymentServiceImp(APIContext apiContext,
                              com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PaymentRepository paymentRepo,
                              com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository userRepo,
-                             com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PackageTypeRepository pkgRepo) {
+                             com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PackageTypeRepository pkgRepo,
+                             MembershipPackageService membershipPackageService) {
         this.apiContext = apiContext;
         this.paymentRepo = paymentRepo;
         this.userRepo    = userRepo;
         this.pkgRepo     = pkgRepo;
+        this.membershipPackageService = membershipPackageService;
     }
 
     @Override
@@ -113,6 +117,21 @@ public class PaymentServiceImp implements PaymentService {
         entity.setPayAt(LocalDateTime.now());
         paymentRepo.save(entity);
 
+        // --- TẠO MEMBERSHIP PACKAGE ---
+        UUID userId        = entity.getUser().getId();
+        UUID packageTypeId = entity.getPaymentPackage().getId();
+        var pkg = pkgRepo.findById(packageTypeId)
+                .orElseThrow(() -> new NoSuchElementException("Package không tồn tại: " + packageTypeId));
+
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate   = startDate.plusDays(pkg.getDuration());
+
+        CreateMembershipPackageRequest req = CreateMembershipPackageRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .isActive(true)
+                .build();
+        membershipPackageService.create(userId, packageTypeId, req);
         return executed;
     }
 

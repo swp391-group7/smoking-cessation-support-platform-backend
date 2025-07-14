@@ -14,5 +14,4 @@ public class CreatePlanStepRequest {
     private Integer stepNumber;
     private Integer targetCigarettesPerDay;
     private String stepDescription;
-    private String status;
 }

@@ -45,6 +45,7 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
         int next = existing.stream().map(Quit_Plan_Step::getStepNumber).max(Comparator.naturalOrder()).map(n->n+1).orElse(1);
         step.setStepNumber(next);
         step.setPlan(plan);
+        step.setStepStatus(computeStatus(start, end));
         Quit_Plan_Step saved = stepRepo.save(step);
         adjustPlanBounds(plan);
         return saved;
@@ -62,10 +63,10 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
                 .stepEndDate(plan.getTargetDate())
                 .targetCigarettesPerDay(0)
                 .stepDescription("")
-                .stepStatus("draft")
                 .plan(plan)
                 .build();
         return createStep(planId, step);
+
     }
 
     @Override
@@ -81,12 +82,14 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
         existing.setStepNumber(step.getStepNumber());
         existing.setStepStartDate(start);
         existing.setStepEndDate(end);
+// ** Tính lại status, không lấy của client **
+        existing.setStepStatus(computeStatus(start, end));
         existing.setTargetCigarettesPerDay(step.getTargetCigarettesPerDay());
         existing.setStepDescription(step.getStepDescription());
-        existing.setStepStatus(step.getStepStatus());
         Quit_Plan_Step updated = stepRepo.save(existing);
         adjustPlanBounds(plan);
         return updated;
+
     }
 
     @Override
@@ -94,14 +97,18 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
         List<Quit_Plan_Step> steps = stepRepo.findByPlanIdOrderByStepNumberAsc(planId);
         Quit_Plan_Step target = steps.stream().filter(s -> s.getStepNumber().equals(stepNumber)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Step not found: number=" + stepNumber));
-        target.setStepStartDate(req.getStepStartDate());
-        target.setStepEndDate(req.getStepEndDate());
+        LocalDate s = req.getStepStartDate();
+        LocalDate e = req.getStepEndDate();
+        target.setStepStartDate(s);
+        target.setStepEndDate(e);
         target.setTargetCigarettesPerDay(req.getTargetCigarettesPerDay());
         target.setStepDescription(req.getStepDescription());
-        target.setStepStatus("active");  // set active after update
+// ** Tính status đúng theo ngày mới **
+        target.setStepStatus(computeStatus(s, e));
         Quit_Plan_Step updated = stepRepo.save(target);
         adjustPlanBounds(target.getPlan());
         return updated;
+
     }
 
     @Override
@@ -148,6 +155,16 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
             plan.setStartDate(steps.get(0).getStepStartDate());
             plan.setTargetDate(steps.get(steps.size() - 1).getStepEndDate());
             planRepo.save(plan);
+        }
+    }
+    private String computeStatus(LocalDate start, LocalDate end) {
+        LocalDate today = LocalDate.now();
+        if (today.isBefore(start)) {
+            return "notyet";
+        } else if (!today.isAfter(end)) {
+            return "active";
+        } else {
+            return "end";
         }
     }
 }

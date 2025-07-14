@@ -48,7 +48,42 @@ public class MembershipPackageController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+    @Operation(summary = "Kiểm tra user có gói active hay không")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Trả về true nếu có, false nếu không"),
+            @ApiResponse(responseCode = "404", description = "User không tồn tại hoặc lỗi tìm kiếm", content = @Content)
+    })
+    @GetMapping("/user/{userId}/has-active")
+    public ResponseEntity<Boolean> hasActivePackage(
+            @PathVariable UUID userId
+    ) {
+        boolean hasActive = membershipPackageService.hasActivePackageByUser(userId);
+        return ResponseEntity.ok(hasActive);
+    }
+    @Operation(summary = "Lấy gói đang active của một user bất kỳ")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Thành công",
+                    content = @Content(schema = @Schema(implementation = MembershipPackageDto.class))),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy gói active", content = @Content)
+    })
+    @GetMapping("/user/{userId}/active-package")
+    public ResponseEntity<MembershipPackageDto> getActivePackageByUserId(
+            @PathVariable UUID userId
+    ) {
+        MembershipPackageDto dto = membershipPackageService.getActivePackageByUser(userId);
+        return ResponseEntity.ok(dto);
+    }
 
+    // 2. Lấy danh sách tất cả userId có gói active
+    @Operation(summary = "Lấy toàn bộ userId đang có gói active")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Danh sách userId"),
+    })
+    @GetMapping("/active/users")
+    public ResponseEntity<List<UUID>> getAllUsersWithActivePackage() {
+        List<UUID> activeUserIds = membershipPackageService.getAllActiveUserIds();
+        return ResponseEntity.ok(activeUserIds);
+    }
 
     @Operation(summary = "Cập nhật gói membership của user hiện tại")
     @ApiResponses({
