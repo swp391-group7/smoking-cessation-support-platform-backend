@@ -426,7 +426,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
     public QuitPlanDto createImmediatePlan(UUID userId) {
         // Close existing active plans
         quitPlanRepository.findByUserIdAndStatusIgnoreCase(userId, "active").forEach(p -> {
-            p.setStatus("completed");
+            p.setStatus("cancelled");
             quitPlanRepository.save(p);
         });
         // Create immediate plan
@@ -485,7 +485,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .findByUserIdAndStatusIgnoreCase(userId, "active");
         if (!activePlans.isEmpty()) {
             for (Quit_Plan p : activePlans) {
-                p.setStatus("completed");
+                p.setStatus("cancelled");
             }
             // lưu batch để tránh gọi save nhiều lần
             quitPlanRepository.saveAll(activePlans);
