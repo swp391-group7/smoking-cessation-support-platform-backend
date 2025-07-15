@@ -18,7 +18,7 @@ public class CreateUserRequest {
     private String phoneNumber;
     private LocalDate dob;
     private String avtarPath;
-
+    private String sex;
     @NotBlank
     private String roleName;
 }

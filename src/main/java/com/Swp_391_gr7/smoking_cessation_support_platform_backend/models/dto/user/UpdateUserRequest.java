@@ -14,6 +14,6 @@ public class UpdateUserRequest {
     private String phoneNumber;
     private LocalDate dob;
     private String avtarPath;
-
+    private String sex;
     private String roleName;
 }

@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(request.getPhoneNumber())
                 .dob(request.getDob())
                 .avtarPath(request.getAvtarPath())
+                .sex(request.getSex())
                 .role(role)
                 .build();
 
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
         if (req.getPhoneNumber() != null) u.setPhoneNumber(req.getPhoneNumber());
         if (req.getDob() != null) u.setDob(req.getDob());
         if (req.getAvtarPath() != null) u.setAvtarPath(req.getAvtarPath());
-
+        if (req.getSex() != null) u.setSex(req.getSex());
         if (req.getRoleName() != null) {
             Role role = roleRepository.findByRole(req.getRoleName())
                     .orElseThrow(() -> new ResponseStatusException(
@@ -155,6 +156,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(u.getPhoneNumber())
                 .dob(u.getDob())
                 .avtarPath(u.getAvtarPath())
+                .sex( u.getSex())
                 .preStatus(u.getPreStatus())
                 .createdAt(u.getCreatedAt())
                 .roleName(u.getRole() != null ? u.getRole().getRole() : null)
