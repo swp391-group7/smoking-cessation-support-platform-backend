@@ -16,6 +16,7 @@ import java.util.UUID;
 public class QuitPlanWithStepsDto {
     private UUID id;
     private UUID userId;
+    private UUID userSurveyId;
     private LocalDate startDate;
     private LocalDate targetDate;
     private String method;

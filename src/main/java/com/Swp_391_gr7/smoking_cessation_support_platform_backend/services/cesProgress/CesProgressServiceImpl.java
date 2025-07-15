@@ -517,8 +517,8 @@ public class CesProgressServiceImpl implements CesProgressService {
                 .orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
         UUID userId = plan.getUser().getId();
 
-        User_Survey survey = userSurveyRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User survey not found for user: " + userId));
+        User_Survey survey = plan.getUser_survey();
+
         BigDecimal priceEach = survey.getPriceEach();
 
         return priceEach.multiply(BigDecimal.valueOf(avoided));

@@ -11,11 +11,14 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.use
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan_Step;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.membershippackage.MembershipPackageService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlanStep.QuitPlanStepService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.survey.SurveyService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UseSurveyService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UserSurveyServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,6 +42,8 @@ public class QuitPlanServiceImpl implements QuitPlanService {
     private final UserSurveyServiceImpl userSurveyService;
     private final UserRepository userRepository;
     private final QuitPlanStepService stepService;
+    private final UserSurveyRepository repository;
+    private final UseSurveyService useSurveyService;
     @Override
     public QuitPlanDto create(UUID userId, QuitPlanCreateRequest request) {
         // Close any existing active plans
@@ -141,8 +146,11 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         // 5. Create draft plan
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User_Survey user_survey = repository.findFirstByUserIdOrderByCreateAtDesc(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No survey found for userId: " + userId));
         Quit_Plan plan = Quit_Plan.builder()
                 .user(user)
+                .user_survey(user_survey)
                 .startDate(startDate)
                 .targetDate(targetDate)
                 .method("GRADUAL")
@@ -255,6 +263,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         return QuitPlanWithStepsDto.builder()
                 .id(plan.getId())
                 .userId(plan.getUser().getId())
+                .userSurveyId(plan.getUser_survey().getId())
                 .startDate(plan.getStartDate())
                 .targetDate(plan.getTargetDate())
                 .method(plan.getMethod())
@@ -423,8 +432,11 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         // Create immediate plan
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User_Survey user_survey = repository.findFirstByUserIdOrderByCreateAtDesc(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No survey found for userId: " + userId));
         Quit_Plan plan = Quit_Plan.builder()
                 .user(user)
+                .user_survey(user_survey)
                 .startDate(LocalDate.now())
                 .targetDate(LocalDate.now())
                 .method("IMMEDIATE")
@@ -444,8 +456,11 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         // Tạo draft mới
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User_Survey user_survey = repository.findFirstByUserIdOrderByCreateAtDesc(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No survey found for userId: " + userId));
         Quit_Plan draft = Quit_Plan.builder()
                 .user(user)
+                .user_survey(user_survey)
                 .startDate(LocalDate.now())
                 .targetDate(LocalDate.now())
                 .method("GRADUAL")
@@ -496,6 +511,7 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         return QuitPlanDto.builder()
                 .id(entity.getId())
                 .userId(entity.getUser().getId())
+                .userSurveyId(entity.getUser_survey().getId())
                 .startDate(entity.getStartDate())
                 .targetDate(entity.getTargetDate())
                 .method(entity.getMethod())

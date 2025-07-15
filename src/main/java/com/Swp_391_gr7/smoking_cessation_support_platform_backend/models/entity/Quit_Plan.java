@@ -35,6 +35,11 @@ public class Quit_Plan {
 //            foreignKey = @ForeignKey(name = "fk_quitplan_smokesurvey"))
 //    private Smoke_Survey smokeSurvey;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)  // Người dùng
+    @JoinColumn (name = "user_survey_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_user_survey"))
+    private User_Survey user_survey ;
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;  // Ngày bắt đầu
 

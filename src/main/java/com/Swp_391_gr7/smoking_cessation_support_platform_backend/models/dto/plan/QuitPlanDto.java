@@ -16,6 +16,7 @@ import java.util.UUID;
 public class QuitPlanDto {
     private UUID id;
     private UUID userId;
+    private UUID userSurveyId;
     private LocalDate startDate;
     //private UUID smokeSurveyId;
     private String method;
