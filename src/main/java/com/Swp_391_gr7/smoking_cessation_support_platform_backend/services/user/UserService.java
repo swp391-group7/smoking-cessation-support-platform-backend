@@ -3,6 +3,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.CreateUserRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UpdateUserRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.userStatsDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 
 import java.util.List;
@@ -35,4 +36,9 @@ public interface UserService {
 
     User getUserEntityById(UUID userId);
 
+
+    List<userStatsDto.MonthlyUserStats> getUserStatsByMonthInYear(int year);
+    List<userStatsDto.AgeGroupStats> getUserStatsByAgeGroup();
+    List<userStatsDto.GenderStats> getUserStatsByGender();
+    userStatsDto.UserStatisticsResponse getAllUserStatistics(int year);
 }
