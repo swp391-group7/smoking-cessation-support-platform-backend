@@ -38,9 +38,7 @@ public class UserController {
 
     @GetMapping("/get-current")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
-        if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to access this resource");
-        }
+
         UUID userId = UUID.fromString(authentication.getName());
         UserDto dto = userService.getUserById(userId);
         return ResponseEntity.ok(dto);
@@ -48,9 +46,7 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request, Authentication authentication) {
-        if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to update users");
-        }
+
         UUID userId = UUID.fromString(authentication.getName());
         UserDto updated = userService.updateUser(userId, request);
         return ResponseEntity.ok(updated);
