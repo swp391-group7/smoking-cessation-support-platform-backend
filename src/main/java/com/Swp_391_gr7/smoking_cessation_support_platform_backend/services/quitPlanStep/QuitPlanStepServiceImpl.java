@@ -153,6 +153,11 @@ public class QuitPlanStepServiceImpl implements QuitPlanStepService {
     }
 
     private void adjustPlanBounds(Quit_Plan plan) {
+        // Chỉ adjust bounds nếu plan không phải là draft được tạo từ survey
+        if ("draft".equals(plan.getStatus())) {
+            return; // Không adjust bounds cho draft plan
+        }
+
         List<Quit_Plan_Step> steps = stepRepo.findByPlanIdOrderByStepStartDateAsc(plan.getId());
         if (!steps.isEmpty()) {
             plan.setStartDate(steps.get(0).getStepStartDate());
