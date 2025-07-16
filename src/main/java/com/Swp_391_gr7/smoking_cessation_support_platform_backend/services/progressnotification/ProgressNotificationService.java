@@ -15,6 +15,5 @@ public interface ProgressNotificationService {
     ProgressNotificationDto changeStatus(UUID id);
     ProgressNotificationDto getById(UUID id);
     List<ProgressNotificationDto> getByPlanId(UUID planId);
-    List<ProgressNotificationDto> searchByContent(String content);
     List<ProgressNotificationDto> searchByType(String type);
 }

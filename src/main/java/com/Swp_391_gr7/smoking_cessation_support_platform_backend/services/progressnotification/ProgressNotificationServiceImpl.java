@@ -71,13 +71,6 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
     }
 
     @Override
-    public List<ProgressNotificationDto> searchByContent(String content) {
-        return progressNotificationRepository.findByMessageContainingIgnoreCase(content).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<ProgressNotificationDto> searchByType(String type) {
         return progressNotificationRepository.findByTypeContainingIgnoreCase(type).stream()
                 .map(this::mapToDto)
@@ -92,7 +85,6 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
                 .channel(entity.getChannel())
                 .type(entity.getType())
                 .sentAt(entity.getSentAt())
-                .expireAt(entity.getExpirationAt())
                 .isRead(entity.getIsRead())
                 .build();
     }

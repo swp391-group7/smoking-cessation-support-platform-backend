@@ -37,13 +37,19 @@ public class ProgressNotification {
     @CreationTimestamp
     private LocalDateTime sentAt;
 
-    @Column(name = "expiration_at")
-    private LocalDateTime expirationAt;
+//    @Column(name = "expiration_at")
+//    private LocalDateTime expirationAt;
 
     @Column(nullable = false)
     private String type;
 
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
+
+    @Column(name="sender_id", nullable=false)
+    private UUID senderId;
+
+    @Column(name="recipient_id", nullable=false)
+    private UUID recipientId;
 }
 
