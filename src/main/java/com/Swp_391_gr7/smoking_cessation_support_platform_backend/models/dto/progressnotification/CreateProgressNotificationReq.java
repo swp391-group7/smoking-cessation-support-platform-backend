@@ -1,19 +1,18 @@
+// src/main/java/com/Swp_391_gr7/smoking_cessation_support_platform_backend/models/dto/progressnotification/CreateProgressNotificationReq.java
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.progressnotification;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.UUID;
+import lombok.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CreateProgressNotificationReq {
-    private String title;
+    @NotBlank
     private String message;
-    private String channel;
-    private String type;
+    @NotBlank
+    private String channel;   // "push" hoặc "email"
+    @NotBlank
+    private String type;      // coach: "remind" hoặc "chat"; user: "chat"
 }

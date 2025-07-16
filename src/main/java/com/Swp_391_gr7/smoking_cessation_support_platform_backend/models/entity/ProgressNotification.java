@@ -41,7 +41,7 @@ public class ProgressNotification {
 //    private LocalDateTime expirationAt;
 
     @Column(nullable = false)
-    private String type;
+    private String type; //remind | chat
 
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;

@@ -10,7 +10,9 @@ import java.util.UUID;
 @Repository
 public interface ProgressNotificationRepository extends JpaRepository<ProgressNotification, UUID> {
     List<ProgressNotification> findByPlanId(UUID planId);
+    List<ProgressNotification> findByTypeIgnoreCase(String type);
+    List<ProgressNotification> findByChannelIgnoreCase(String channel);
 
-    List<ProgressNotification> findByMessageContainingIgnoreCase(String message);
-    List<ProgressNotification> findByTypeContainingIgnoreCase(String type);
+    // Gửi bởi ai (senderId)
+    List<ProgressNotification> findBySenderIdAndTypeIgnoreCase(UUID senderId, String type);
 }

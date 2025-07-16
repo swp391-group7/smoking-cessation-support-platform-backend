@@ -138,6 +138,7 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
                 .id(e.getId())
                 .userId(e.getUser().getId())
                 .packagetTypeId(e.getPackageType().getId())
+                .coachId(e.getCoach() != null ? e.getCoach().getUserId() : null) // <— có thể null nếu chưa gán coach
                 .packageTypeName(e.getPackageType().getName()) // <— lấy tên từ Package_Types
                 .startDate(e.getStartDate())
                 .endDate(e.getEndDate())
