@@ -24,11 +24,11 @@ public interface ProgressNotificationService {
     // Lấy theo plan
     List<ProgressNotificationDto> getByPlanId(UUID planId);
 
-    // Lọc theo type
-    List<ProgressNotificationDto> getByType(String type);
+    // Lọc theo type của plan active
+    List<ProgressNotificationDto> getByType(UUID userId, String type);
 
-    // Lọc theo channel
-    List<ProgressNotificationDto> getByChannel(String channel);
+    // Lọc theo channel của plan active
+    List<ProgressNotificationDto> getByChannel(UUID userId, String channel);
 
     // Lấy tất cả remind mà coach đã gửi
     List<ProgressNotificationDto> getRemindsByCoach(UUID coachId);

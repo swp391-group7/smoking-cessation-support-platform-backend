@@ -3,6 +3,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.memb
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.CreateMembershipPackageRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.MembershipPackageDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.UpdateMemberShipPackageRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Coach;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Membership_Package;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Package_Types;
@@ -131,6 +132,41 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
 
         // 4. Chuyển thành DTO và trả về
         return toDto(saved);
+    }
+    // Hàm tiện ích chuyển User → UserDto
+    private UserDto toUserDto(User u) {
+        return UserDto.builder()
+                .id(u.getId())
+                .username(u.getUsername())
+                // Không nên expose password thực, thường sẽ null hoặc bỏ qua
+                .password(null)
+                .email(u.getEmail())
+                .providerId(u.getProviderId())
+                .fullName(u.getFullName())
+                .phoneNumber(u.getPhoneNumber())
+                .dob(u.getDob())
+                .sex(u.getSex())
+                .avtarPath(u.getAvtarPath())
+                .preStatus(u.getPreStatus())
+                .createdAt(u.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    public List<UserDto> getUsersByCoach(UUID coachId) {
+        List<User> users = membershipPackageRepository.findDistinctUsersByCoachId(coachId);
+        return users.stream()
+                .map(this::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MembershipPackageDto> getMembershipsByUserAndCoach(UUID userId, UUID coachId) {
+        return membershipPackageRepository
+                .findAllByUserIdAndCoach_UserId(userId, coachId)
+                .stream()
+                .map(this::toDto)  // dùng lại toDto() cho MembershipPackageDto
+                .collect(Collectors.toList());
     }
 
     private MembershipPackageDto toDto(Membership_Package e) {

@@ -3,6 +3,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.CreateMembershipPackageRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.MembershipPackageDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.UpdateMemberShipPackageRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.membershippackage.MembershipPackageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -185,5 +186,34 @@ public class MembershipPackageController {
                 .assignCoach(currentUserId, request.getCoachId());
 
         return ResponseEntity.ok(updated);
+    }
+
+
+    @Operation(summary = "Lấy danh sách người dùng được coach này đồng hành")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Trả về danh sách UserDto"),
+            @ApiResponse(responseCode = "404", description = "Coach không tồn tại hoặc không có user nào", content = @Content)
+    })
+    @GetMapping("/coach/{coachId}/users")
+    public ResponseEntity<List<UserDto>> getUsersByCoach(
+            @PathVariable UUID coachId
+    ) {
+        List<UserDto> users = membershipPackageService.getUsersByCoach(coachId);
+        return ResponseEntity.ok(users);
+    }
+
+    @Operation(summary = "Lấy tất cả membership-package của một user với coach cụ thể")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Trả về danh sách MembershipPackageDto"),
+            @ApiResponse(responseCode = "404", description = "Không tìm thấy user hoặc coach", content = @Content)
+    })
+    @GetMapping("/coach/{coachId}/user/{userId}/memberships")
+    public ResponseEntity<List<MembershipPackageDto>> getMembershipsByUserAndCoach(
+            @PathVariable UUID coachId,
+            @PathVariable UUID userId
+    ) {
+        List<MembershipPackageDto> list =
+                membershipPackageService.getMembershipsByUserAndCoach(userId, coachId);
+        return ResponseEntity.ok(list);
     }
 }

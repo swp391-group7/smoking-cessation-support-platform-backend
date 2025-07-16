@@ -24,9 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProgressNotificationController {
     private final ProgressNotificationService svc;
+
     private UUID currentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // Giả sử trong JWT bạn đã set principal là chuỗi UUID
         return UUID.fromString(auth.getName());
     }
 
@@ -41,7 +41,7 @@ public class ProgressNotificationController {
             @PathVariable UUID planId,
             @Valid @RequestBody CreateProgressNotificationReq req) {
 
-        UUID coachId = currentUserId();   // <-- đây
+        UUID coachId = currentUserId();
         ProgressNotificationDto dto = svc.coachNotify(coachId, planId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
@@ -51,11 +51,10 @@ public class ProgressNotificationController {
             @PathVariable UUID planId,
             @Valid @RequestBody CreateProgressNotificationReq req) {
 
-        UUID userId = currentUserId();    // <-- và đây
+        UUID userId = currentUserId();
         ProgressNotificationDto dto = svc.userChat(userId, planId, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
-
 
     @Operation(summary = "Cập nhật notification")
     @ApiResponses({
@@ -95,21 +94,23 @@ public class ProgressNotificationController {
         return ResponseEntity.ok(list);
     }
 
-    @Operation(summary = "Lấy notifications theo type")
+    @Operation(summary = "Lấy notifications theo type của plan active")
     @GetMapping("/type/{type}")
     public ResponseEntity<List<ProgressNotificationDto>> getByType(
             @PathVariable String type) {
 
-        List<ProgressNotificationDto> list = svc.getByType(type);
+        UUID userId = currentUserId();
+        List<ProgressNotificationDto> list = svc.getByType(userId, type);
         return ResponseEntity.ok(list);
     }
 
-    @Operation(summary = "Lấy notifications theo channel")
+    @Operation(summary = "Lấy notifications theo channel của plan active")
     @GetMapping("/channel/{channel}")
     public ResponseEntity<List<ProgressNotificationDto>> getByChannel(
             @PathVariable String channel) {
 
-        List<ProgressNotificationDto> list = svc.getByChannel(channel);
+        UUID userId = currentUserId();
+        List<ProgressNotificationDto> list = svc.getByChannel(userId, channel);
         return ResponseEntity.ok(list);
     }
 

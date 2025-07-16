@@ -141,16 +141,38 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProgressNotificationDto> getByType(String type) {
-        return notifRepo.findByTypeIgnoreCase(type).stream()
-                .map(this::toDto).collect(Collectors.toList());
+    public List<ProgressNotificationDto> getByType(UUID userId, String type) {
+        // Lấy Quit_Plan active của user
+        Quit_Plan activePlan = quitPlanRepo
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (activePlan == null) {
+            throw new RuntimeException("No active quit plan found for user: " + userId);
+        }
+
+        // Query notifications theo plan và type
+        return notifRepo
+                .findByPlanIdAndTypeIgnoreCase(activePlan.getId(), type)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProgressNotificationDto> getByChannel(String channel) {
-        return notifRepo.findByChannelIgnoreCase(channel).stream()
-                .map(this::toDto).collect(Collectors.toList());
+    public List<ProgressNotificationDto> getByChannel(UUID userId, String channel) {
+        // Lấy Quit_Plan active của user
+        Quit_Plan activePlan = quitPlanRepo
+                .findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+        if (activePlan == null) {
+            throw new RuntimeException("No active quit plan found for user: " + userId);
+        }
+
+        // Query notifications theo plan và channel
+        return notifRepo
+                .findByPlanIdAndChannelIgnoreCase(activePlan.getId(), channel)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

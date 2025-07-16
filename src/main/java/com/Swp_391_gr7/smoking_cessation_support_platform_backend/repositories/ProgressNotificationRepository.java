@@ -15,4 +15,10 @@ public interface ProgressNotificationRepository extends JpaRepository<ProgressNo
 
     // Gửi bởi ai (senderId)
     List<ProgressNotification> findBySenderIdAndTypeIgnoreCase(UUID senderId, String type);
+    // theo type của notification trong 1 plan cụ thể
+    List<ProgressNotification> findByPlanIdAndTypeIgnoreCase(UUID planId, String type);
+
+    // theo channel của notification trong 1 plan cụ thể
+    List<ProgressNotification> findByPlanIdAndChannelIgnoreCase(UUID planId, String channel);
+
 }

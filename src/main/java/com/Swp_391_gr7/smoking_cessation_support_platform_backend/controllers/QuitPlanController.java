@@ -4,8 +4,10 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.pla
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanWithStepsDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan.QuitPlanService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UseSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +29,7 @@ import java.util.UUID;
 public class QuitPlanController {
     private final QuitPlanService quitPlanService;
     private final UserService userService;
-
+    private final UseSurveyService userSurveyService;
 
 
     private UUID getCurrentUserId() {
@@ -55,9 +57,12 @@ public class QuitPlanController {
             @ApiResponse(responseCode = "404", description = "Survey or User not found", content = @Content)
     })
 // 4. Cập nhật Controller
-    @PostMapping("/generate-from-survey/{surveyId}")
-    public ResponseEntity<QuitPlanWithStepsDto> generateFromSurvey(@PathVariable UUID surveyId) {
-        QuitPlanWithStepsDto dto = quitPlanService.generatePlanFromSurvey(getCurrentUserId(), surveyId);
+    @PostMapping("/generate-from-survey")
+    public ResponseEntity<QuitPlanWithStepsDto> generateFromSurvey() {
+        UUID userId = getCurrentUserId();
+        UserSurveyDto latestSurvey = userSurveyService.getFirstSurveyOfUser(userId);
+
+        QuitPlanWithStepsDto dto = quitPlanService.generatePlanFromSurvey(getCurrentUserId(), latestSurvey.getId());
         System.out.println("Plan: " + dto.getStartDate() + " → " + dto.getTargetDate());
         dto.getSteps().forEach(s ->
                 System.out.println("Step " + s.getStepNumber()
