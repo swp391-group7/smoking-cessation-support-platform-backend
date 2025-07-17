@@ -563,6 +563,58 @@ public class CesProgressServiceImpl implements CesProgressService {
 
         return (int) uniqueDays;
     }
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo planId
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public int countTodayProgress(UUID planId) {
+        log.info("Counting today's progress records for plan: {}", planId);
+
+        try {
+            // Kiểm tra plan tồn tại
+            if (!quitPlanRepository.existsById(planId)) {
+                throw new RuntimeException("Plan not found: " + planId);
+            }
+
+            LocalDate today = LocalDate.now();
+            List<Cessation_Progress> todayProgress = cesProgressRepository.findByPlan_IdAndLogDate(planId, today);
+
+            log.info("Found {} progress records for today ({}) in plan: {}",
+                    todayProgress.size(), today, planId);
+
+            return todayProgress.size();
+
+        } catch (Exception e) {
+            log.error("Error counting today's progress for plan {}: {}", planId, e.getMessage(), e);
+            throw new RuntimeException("Failed to count today's progress", e);
+        }
+    }
+
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo userId (plan active)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public int countTodayProgressByUser(UUID userId) {
+        log.info("Counting today's progress records for user: {}", userId);
+
+        try {
+            // Lấy plan active hiện tại của user
+            Quit_Plan activePlan = quitPlanRepository.findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+
+            if (activePlan == null) {
+                log.warn("No active plan found for user: {}", userId);
+                return 0;
+            }
+
+            return countTodayProgress(activePlan.getId());
+
+        } catch (Exception e) {
+            log.error("Error counting today's progress for user {}: {}", userId, e.getMessage(), e);
+            throw new RuntimeException("Failed to count today's progress for user", e);
+        }
+    }
 
 
 
