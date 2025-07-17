@@ -4,7 +4,9 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.pro
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.progressnotification.ProgressNotificationDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.progressnotification.UpdateProgressNotificationRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.progressnotification.ProgressNotificationService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.progressnotification.ProgressNotificationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,7 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProgressNotificationController {
     private final ProgressNotificationService svc;
-
+    private final ProgressNotificationServiceImpl notifService;
     private UUID currentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return UUID.fromString(auth.getName());
@@ -120,6 +122,27 @@ public class ProgressNotificationController {
             @PathVariable UUID coachId) {
 
         List<ProgressNotificationDto> list = svc.getRemindsByCoach(coachId);
+        return ResponseEntity.ok(list);
+    }
+    @Operation(
+            summary = "Get notifications by planId and type",
+            description = "Lấy tất cả notification của một plan theo loại (type)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Notifications retrieved",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProgressNotificationDto.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/by-plan/{planId}/type/{type}")
+    public ResponseEntity<List<ProgressNotificationDto>> getByPlanAndType(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId,
+            @Parameter(description = "Loại notification (e.g. \"remind\", \"chat\")", required = true)
+            @PathVariable String type) {
+
+        List<ProgressNotificationDto> list = notifService.getByPlanIdAndType(planId, type);
         return ResponseEntity.ok(list);
     }
 }

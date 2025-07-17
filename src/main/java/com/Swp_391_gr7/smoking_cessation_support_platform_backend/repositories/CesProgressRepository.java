@@ -50,4 +50,6 @@ public interface CesProgressRepository extends JpaRepository<Cessation_Progress,
             "AND cp.plan.status = 'active' " +
             "AND cp.logDate = :date")
     int countByUserIdAndLogDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
+
+    List<Cessation_Progress> findByPlanStep_Id(UUID planStepId);
 }
