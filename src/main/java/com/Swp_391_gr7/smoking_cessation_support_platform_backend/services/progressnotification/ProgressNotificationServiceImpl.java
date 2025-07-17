@@ -182,6 +182,21 @@ public class ProgressNotificationServiceImpl implements ProgressNotificationServ
                 .map(this::toDto).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProgressNotificationDto> getByPlanIdAndType(UUID planId, String type) {
+        // (nếu muốn) kiểm tra plan tồn tại:
+        if (!quitPlanRepo.existsById(planId)) {
+            throw new RuntimeException("Plan không tồn tại: " + planId);
+        }
+        return notifRepo
+                .findByPlanIdAndTypeIgnoreCase(planId, type)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+
     // ─── Helpers ────────────────────────────────────────────────────────────────
 
     private ProgressNotificationDto toDto(ProgressNotification n) {

@@ -315,7 +315,7 @@ public class CesProgressController {
         int count = cesProgressService.countUniqueProgress(planId);
         return ResponseEntity.ok(count);
     }
-    
+
     @Operation(
             summary = "Count today's progress by plan ID",
             description = "Đếm số bản ghi progress đã tạo hôm nay cho một kế hoạch cụ thể"
@@ -356,5 +356,23 @@ public class CesProgressController {
     }
 
 
+    @Operation(
+            summary = "Get all cessation progress by plan‑step ID",
+            description = "Lấy tất cả bản ghi tiến trình cai thuốc cho một bước kế hoạch cụ thể"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Progress list retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CesProgressDto.class))),
+            @ApiResponse(responseCode = "404", description = "Plan step not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/by-step-id/{planStepId}")
+    public ResponseEntity<List<CesProgressDto>> getAllByPlanStepId(
+            @Parameter(description = "ID của bước kế hoạch", required = true)
+            @PathVariable UUID planStepId) {
+        List<CesProgressDto> list = cesProgressService.getAllByPlanStepId(planStepId);
+        return ResponseEntity.ok(list);
+    }
 
 }

@@ -617,6 +617,23 @@ public class CesProgressServiceImpl implements CesProgressService {
     }
 
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<CesProgressDto> getAllByPlanStepId(UUID planStepId) {
+        log.info("Getting all cessation progress by planStepId: {}", planStepId);
+
+        // 1. Kiểm tra xem planStep có tồn tại không (nếu muốn)
+        //    Có thể inject QuitPlanStepRepository và kiểm tra existsById(planStepId)
+
+        // 2. Lấy danh sách entities
+        List<Cessation_Progress> list = cesProgressRepository.findByPlanStep_Id(planStepId);
+
+        // 3. Map sang DTO và trả về
+        return list.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
 
 
 

@@ -32,4 +32,6 @@ public interface ProgressNotificationService {
 
     // Lấy tất cả remind mà coach đã gửi
     List<ProgressNotificationDto> getRemindsByCoach(UUID coachId);
+
+    List<ProgressNotificationDto> getByPlanIdAndType(UUID planId, String type);
 }

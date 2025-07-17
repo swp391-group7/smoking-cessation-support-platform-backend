@@ -542,6 +542,16 @@ public class QuitPlanServiceImpl implements QuitPlanService {
         }
         return plan.getMaxZeroStreak();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuitPlanDto> getPlansByUserId(UUID userId) {
+        // fetch all plans for this user
+        List<Quit_Plan> plans = quitPlanRepository.findByUserId(userId);
+        // map to DTOs
+        return plans.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
 
 }

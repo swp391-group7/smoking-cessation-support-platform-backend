@@ -251,4 +251,9 @@ public class QuitPlanController {
         return ResponseEntity.ok(max);
     }
 
+    @GetMapping("/users/{userId}/plans")
+    public ResponseEntity<List<QuitPlanDto>> getPlansByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok( quitPlanService.getPlansByUserId(userId) );
+    }
+
 }

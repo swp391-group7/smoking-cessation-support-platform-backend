@@ -45,5 +45,7 @@ public interface QuitPlanService {
     Integer getMaxZeroStreak(UUID userId);
 
     QuitPlanDto activatePlan(UUID userId, UUID planId);
+    List<QuitPlanDto> getPlansByUserId(UUID userId);
+
 
 }

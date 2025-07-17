@@ -59,5 +59,6 @@ public interface CesProgressService {
      * @return số lượng progress records hôm nay
      */
     int countTodayProgressByUser(UUID userId);
+    List<CesProgressDto> getAllByPlanStepId(UUID planStepId);
 
 }
