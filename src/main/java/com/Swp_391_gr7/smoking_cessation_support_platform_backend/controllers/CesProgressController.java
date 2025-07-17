@@ -315,6 +315,45 @@ public class CesProgressController {
         int count = cesProgressService.countUniqueProgress(planId);
         return ResponseEntity.ok(count);
     }
+    
+    @Operation(
+            summary = "Count today's progress by plan ID",
+            description = "Đếm số bản ghi progress đã tạo hôm nay cho một kế hoạch cụ thể"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Count retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/progress/today/{planId}")
+    public ResponseEntity<Integer> countTodayProgressByPlan(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId) {
+
+        int count = cesProgressService.countTodayProgress(planId);
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
+            summary = "Count today's progress for current user",
+            description = "Đếm số bản ghi progress đã tạo hôm nay cho user đang đăng nhập (plan active)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Count retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/progress/today")
+    public ResponseEntity<Integer> countTodayProgressForUser() {
+        UUID userId = UUID.fromString(
+                SecurityContextHolder.getContext().getAuthentication().getName()
+        );
+        int count = cesProgressService.countTodayProgressByUser(userId);
+        return ResponseEntity.ok(count);
+    }
 
 
 

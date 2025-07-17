@@ -47,4 +47,17 @@ public interface CesProgressService {
 
     int countUniqueProgress(UUID planId);
 
+     /* Đếm số bản ghi progress đã tạo hôm nay theo planId
+     * @param planId ID của plan
+     * @return số lượng progress records hôm nay
+     */
+    int countTodayProgress(UUID planId);
+
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo userId (plan active)
+     * @param userId ID của user
+     * @return số lượng progress records hôm nay
+     */
+    int countTodayProgressByUser(UUID userId);
+
 }
