@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -171,7 +172,8 @@ public class CesProgressController {
     })
     @GetMapping("/statistics/today")
     public ResponseEntity<Integer> getTotalCigarettesToday() {
-        Integer total = cesProgressService.getTotalCigarettesToday();
+        UUID userId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName());
+        Integer total = cesProgressService.getTotalCigarettesToday(userId);
         return ResponseEntity.ok(total);
     }
 
@@ -193,7 +195,8 @@ public class CesProgressController {
             @Parameter(description = "Ngày cần tính tổng (format: yyyy-MM-dd)", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        Integer total = cesProgressService.getTotalCigarettesByDate(date);
+        Integer total = cesProgressService.getTotalCigarettesByDate(date,
+                UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()));
         return ResponseEntity.ok(total);
     }
 

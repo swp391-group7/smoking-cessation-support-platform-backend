@@ -208,36 +208,42 @@ public class CesProgressServiceImpl implements CesProgressService {
         }
     }
 
-    /**
-     * Tính tổng số thuốc đã hút trong ngày hôm nay
-     * @return tổng số thuốc đã hút
-     */
-    public Integer getTotalCigarettesToday() {
-        return getTotalCigarettesByDate(LocalDate.now());
+    public Integer getTotalCigarettesToday(UUID userId) {
+        return getTotalCigarettesByDate(LocalDate.now(), userId);
     }
 
     /**
-     * Tính tổng số thuốc đã hút trong 1 ngày cụ thể
+     * Tính tổng số thuốc đã hút trong 1 ngày cụ thể của plan active hiện tại
      * @param date ngày cần tính
+     * @param userId ID của user
      * @return tổng số thuốc đã hút
      */
-    public Integer getTotalCigarettesByDate(LocalDate date) {
-        log.info("Calculating total cigarettes smoked on date: {}", date);
+    public Integer getTotalCigarettesByDate(LocalDate date, UUID userId) {
+        log.info("Calculating total cigarettes smoked on date: {} for user: {}", date, userId);
 
         try {
-            List<Cessation_Progress> progressList = cesProgressRepository.findByLogDate(date);
+            // Lấy plan active hiện tại của user
+            Quit_Plan activePlan = quitPlanRepository.findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+
+            if (activePlan == null) {
+                log.warn("No active plan found for user: {}", userId);
+                return 0;
+            }
+
+            // Lấy progress theo plan ID và ngày
+            List<Cessation_Progress> progressList = cesProgressRepository.findByPlan_IdAndLogDate(activePlan.getId(), date);
 
             int totalCigarettes = progressList.stream()
                     .mapToInt(progress -> progress.getCigarettesSmoked() != null ? progress.getCigarettesSmoked() : 0)
                     .sum();
 
-            log.info("Total cigarettes smoked on {}: {} (from {} records)",
-                    date, totalCigarettes, progressList.size());
+            log.info("Total cigarettes smoked on {} for user {}: {} (from {} records)",
+                    date, userId, totalCigarettes, progressList.size());
 
             return totalCigarettes;
 
         } catch (Exception e) {
-            log.error("Error calculating total cigarettes for date {}: {}", date, e.getMessage(), e);
+            log.error("Error calculating total cigarettes for date {} and user {}: {}", date, userId, e.getMessage(), e);
             throw new RuntimeException("Failed to calculate total cigarettes", e);
         }
     }
@@ -257,7 +263,7 @@ public class CesProgressServiceImpl implements CesProgressService {
 
             // Tính tổng cho mỗi ngày trong tuần
             for (LocalDate date = weekAgo; !date.isAfter(today); date = date.plusDays(1)) {
-                totalCigarettes += getTotalCigarettesByDate(date);
+                totalCigarettes += getTotalCigarettesByDate(date, null); // null để lấy plan active của user hiện tại
             }
 
             log.info("Total cigarettes smoked this week (from {} to {}): {}",
@@ -284,7 +290,7 @@ public class CesProgressServiceImpl implements CesProgressService {
             java.util.Map<LocalDate, Integer> result = new java.util.HashMap<>();
 
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                int totalForDate = getTotalCigarettesByDate(date);
+                int totalForDate = getTotalCigarettesByDate(date, null); // null để lấy plan active của user hiện tại
                 result.put(date, totalForDate);
             }
 
