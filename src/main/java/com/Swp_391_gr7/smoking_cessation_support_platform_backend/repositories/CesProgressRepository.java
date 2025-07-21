@@ -35,4 +35,21 @@ public interface CesProgressRepository extends JpaRepository<Cessation_Progress,
             "ORDER BY cp.logDate DESC")
     List<DailyTotal> findDailyTotalsByPlan(@Param("planId") UUID planId);
     List<Cessation_Progress> findAllByPlanIdOrderByLogDateAsc(UUID planId);
+    List<Cessation_Progress> findByPlan_IdAndLogDate(UUID planId, LocalDate logDate);
+
+        /* Đếm số lượng progress records hôm nay theo planId
+     */
+    @Query("SELECT COUNT(cp) FROM Cessation_Progress cp WHERE cp.plan.id = :planId AND cp.logDate = :date")
+    int countByPlanIdAndLogDate(@Param("planId") UUID planId, @Param("date") LocalDate date);
+
+    /**
+     * Đếm số lượng progress records hôm nay theo userId (plan active)
+     */
+    @Query("SELECT COUNT(cp) FROM Cessation_Progress cp " +
+            "WHERE cp.plan.user.id = :userId " +
+            "AND cp.plan.status = 'active' " +
+            "AND cp.logDate = :date")
+    int countByUserIdAndLogDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
+
+    List<Cessation_Progress> findByPlanStep_Id(UUID planStepId);
 }

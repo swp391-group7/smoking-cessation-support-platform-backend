@@ -28,14 +28,22 @@ public class UserBadgeServiceImpl implements UserBadgeService {
 
     @Override
     public UserBadgeDto assignBadge(UUID userId, UUID badgeId) {
+        // Kiểm tra nếu đã có user-badge rồi thì bỏ qua
+        if (userBadgesRepository.existsByUserIdAndBadgeId(userId, badgeId)) {
+            return null; // hoặc có thể return Optional.empty() nếu bạn muốn rõ ràng
+        }
+
+        // Nếu chưa có thì mới cấp badge
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
         Badges badge = badgesRepository.findById(badgeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Badge not found: " + badgeId));
+
         UserBadge userBadge = UserBadge.builder().user(user).badge(badge).build();
         UserBadge saved = userBadgesRepository.save(userBadge);
         return toDto(saved);
     }
+
 
     @Override
     public List<UserBadgeDto> getUserBadges(UUID userId) {

@@ -1,16 +1,14 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesProgress;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.badge.BadgeDetailDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Cessation_Progress;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan_Step;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User_Survey;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CesProgressRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.QuitPlanStepRepository;
-import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserSurveyRepository;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userbadge.UserBadgeDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.*;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.*;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userbadge.UserBadgeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,18 +34,21 @@ public class CesProgressServiceImpl implements CesProgressService {
     private final QuitPlanRepository quitPlanRepository;               // thêm
     private final QuitPlanStepRepository quitPlanStepRepository;
     private final UserSurveyRepository userSurveyRepository;
+
+    private final UserBadgeService userBadgeService;    // mới
+    private final BadgesRepository badgesRepository;     // để query badge theo condition
     @Override
-    public CesProgressDto create(CreateCesProgressRequest request) {
+    public CreateProgressResponse create(CreateCesProgressRequest request) {
         log.info("Creating new cessation progress for plan: {}", request.getPlanId());
 
-        // 1. Lấy plan và step từ DB
-        Quit_Plan plan = quitPlanRepository.findById(request.getPlanId())
-                .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + request.getPlanId()));
-        Quit_Plan_Step step = quitPlanStepRepository.findById(request.getPlanStepId())
-                .orElseThrow(() -> new RuntimeException("Plan step not found with ID: " + request.getPlanStepId()));
-
         try {
-            // Tạo entity từ request
+            // 1. Lấy plan và step từ DB
+            Quit_Plan plan = quitPlanRepository.findById(request.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Plan not found with ID: " + request.getPlanId()));
+            Quit_Plan_Step step = quitPlanStepRepository.findById(request.getPlanStepId())
+                    .orElseThrow(() -> new RuntimeException("Plan step not found with ID: " + request.getPlanStepId()));
+
+            // 2. Tạo entity và lưu vào DB
             Cessation_Progress progress = Cessation_Progress.builder()
                     .plan(plan)
                     .planStep(step)
@@ -56,14 +58,11 @@ public class CesProgressServiceImpl implements CesProgressService {
                     .note(request.getNote())
                     .logDate(LocalDate.now())
                     .build();
-
-            // Lưu vào database
             Cessation_Progress savedProgress = cesProgressRepository.save(progress);
 
-            // Tính streak dựa vào method của plan
+            // 3. Tính currentStreak dựa trên method
             String method = plan.getMethod();
-            int currentStreak = 0;
-
+            int currentStreak;
             if ("IMMEDIATE".equalsIgnoreCase(method)) {
                 currentStreak = calcZeroStreak(plan.getId());
             } else if ("GRADUAL".equalsIgnoreCase(method)) {
@@ -73,13 +72,38 @@ public class CesProgressServiceImpl implements CesProgressService {
                 currentStreak = calcZeroStreak(plan.getId());
             }
 
-            // Cập nhật plan
+            // 4. Cập nhật plan
             plan.setCurrentZeroStreak(currentStreak);
             plan.setMaxZeroStreak(Math.max(plan.getMaxZeroStreak(), currentStreak));
             quitPlanRepository.save(plan);
 
+            // 5. Lấy badge có condition == currentStreak và gán cho user
+            UUID userId = plan.getUser().getId();
+            List<Badges> toAward = badgesRepository.findAllByCondition(currentStreak);
+
+            List<BadgeDetailDto> newBadges = new ArrayList<>();
+            for (Badges badge : toAward) {
+                UserBadgeDto ub = userBadgeService.assignBadge(userId, badge.getId());
+                if (ub != null) {
+                    newBadges.add(
+                            BadgeDetailDto.builder()
+                                    .id(badge.getId())
+                                    .badgeName(badge.getBadgeName())
+                                    .badgeDescription(badge.getBadgeDescription())
+                                    .badgeImageUrl(badge.getBadgeImageUrl())
+                                    .condition(badge.getCondition())
+                                    .createdAt(badge.getCreatedAt())
+                                    .build()
+                    );
+                }
+            }
+
             log.info("Successfully created cessation progress with ID: {}", savedProgress.getId());
-            return mapToDto(savedProgress);
+            // 6. Trả về cả progress và danh sách badge mới
+            return new CreateProgressResponse(
+                    mapToDto(savedProgress),
+                    newBadges
+            );
 
         } catch (Exception e) {
             log.error("Error creating cessation progress: {}", e.getMessage(), e);
@@ -184,36 +208,42 @@ public class CesProgressServiceImpl implements CesProgressService {
         }
     }
 
-    /**
-     * Tính tổng số thuốc đã hút trong ngày hôm nay
-     * @return tổng số thuốc đã hút
-     */
-    public Integer getTotalCigarettesToday() {
-        return getTotalCigarettesByDate(LocalDate.now());
+    public Integer getTotalCigarettesToday(UUID userId) {
+        return getTotalCigarettesByDate(LocalDate.now(), userId);
     }
 
     /**
-     * Tính tổng số thuốc đã hút trong 1 ngày cụ thể
+     * Tính tổng số thuốc đã hút trong 1 ngày cụ thể của plan active hiện tại
      * @param date ngày cần tính
+     * @param userId ID của user
      * @return tổng số thuốc đã hút
      */
-    public Integer getTotalCigarettesByDate(LocalDate date) {
-        log.info("Calculating total cigarettes smoked on date: {}", date);
+    public Integer getTotalCigarettesByDate(LocalDate date, UUID userId) {
+        log.info("Calculating total cigarettes smoked on date: {} for user: {}", date, userId);
 
         try {
-            List<Cessation_Progress> progressList = cesProgressRepository.findByLogDate(date);
+            // Lấy plan active hiện tại của user
+            Quit_Plan activePlan = quitPlanRepository.findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+
+            if (activePlan == null) {
+                log.warn("No active plan found for user: {}", userId);
+                return 0;
+            }
+
+            // Lấy progress theo plan ID và ngày
+            List<Cessation_Progress> progressList = cesProgressRepository.findByPlan_IdAndLogDate(activePlan.getId(), date);
 
             int totalCigarettes = progressList.stream()
                     .mapToInt(progress -> progress.getCigarettesSmoked() != null ? progress.getCigarettesSmoked() : 0)
                     .sum();
 
-            log.info("Total cigarettes smoked on {}: {} (from {} records)",
-                    date, totalCigarettes, progressList.size());
+            log.info("Total cigarettes smoked on {} for user {}: {} (from {} records)",
+                    date, userId, totalCigarettes, progressList.size());
 
             return totalCigarettes;
 
         } catch (Exception e) {
-            log.error("Error calculating total cigarettes for date {}: {}", date, e.getMessage(), e);
+            log.error("Error calculating total cigarettes for date {} and user {}: {}", date, userId, e.getMessage(), e);
             throw new RuntimeException("Failed to calculate total cigarettes", e);
         }
     }
@@ -233,7 +263,7 @@ public class CesProgressServiceImpl implements CesProgressService {
 
             // Tính tổng cho mỗi ngày trong tuần
             for (LocalDate date = weekAgo; !date.isAfter(today); date = date.plusDays(1)) {
-                totalCigarettes += getTotalCigarettesByDate(date);
+                totalCigarettes += getTotalCigarettesByDate(date, null); // null để lấy plan active của user hiện tại
             }
 
             log.info("Total cigarettes smoked this week (from {} to {}): {}",
@@ -260,7 +290,7 @@ public class CesProgressServiceImpl implements CesProgressService {
             java.util.Map<LocalDate, Integer> result = new java.util.HashMap<>();
 
             for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                int totalForDate = getTotalCigarettesByDate(date);
+                int totalForDate = getTotalCigarettesByDate(date, null); // null để lấy plan active của user hiện tại
                 result.put(date, totalForDate);
             }
 
@@ -493,8 +523,8 @@ public class CesProgressServiceImpl implements CesProgressService {
                 .orElseThrow(() -> new RuntimeException("Plan not found: " + planId));
         UUID userId = plan.getUser().getId();
 
-        User_Survey survey = userSurveyRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User survey not found for user: " + userId));
+        User_Survey survey = plan.getUser_survey();
+
         BigDecimal priceEach = survey.getPriceEach();
 
         return priceEach.multiply(BigDecimal.valueOf(avoided));
@@ -533,7 +563,76 @@ public class CesProgressServiceImpl implements CesProgressService {
 
         return (int) uniqueDays;
     }
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo planId
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public int countTodayProgress(UUID planId) {
+        log.info("Counting today's progress records for plan: {}", planId);
 
+        try {
+            // Kiểm tra plan tồn tại
+            if (!quitPlanRepository.existsById(planId)) {
+                throw new RuntimeException("Plan not found: " + planId);
+            }
+
+            LocalDate today = LocalDate.now();
+            List<Cessation_Progress> todayProgress = cesProgressRepository.findByPlan_IdAndLogDate(planId, today);
+
+            log.info("Found {} progress records for today ({}) in plan: {}",
+                    todayProgress.size(), today, planId);
+
+            return todayProgress.size();
+
+        } catch (Exception e) {
+            log.error("Error counting today's progress for plan {}: {}", planId, e.getMessage(), e);
+            throw new RuntimeException("Failed to count today's progress", e);
+        }
+    }
+
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo userId (plan active)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public int countTodayProgressByUser(UUID userId) {
+        log.info("Counting today's progress records for user: {}", userId);
+
+        try {
+            // Lấy plan active hiện tại của user
+            Quit_Plan activePlan = quitPlanRepository.findFirstByUserIdAndStatusIgnoreCase(userId, "active");
+
+            if (activePlan == null) {
+                log.warn("No active plan found for user: {}", userId);
+                return 0;
+            }
+
+            return countTodayProgress(activePlan.getId());
+
+        } catch (Exception e) {
+            log.error("Error counting today's progress for user {}: {}", userId, e.getMessage(), e);
+            throw new RuntimeException("Failed to count today's progress for user", e);
+        }
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CesProgressDto> getAllByPlanStepId(UUID planStepId) {
+        log.info("Getting all cessation progress by planStepId: {}", planStepId);
+
+        // 1. Kiểm tra xem planStep có tồn tại không (nếu muốn)
+        //    Có thể inject QuitPlanStepRepository và kiểm tra existsById(planStepId)
+
+        // 2. Lấy danh sách entities
+        List<Cessation_Progress> list = cesProgressRepository.findByPlanStep_Id(planStepId);
+
+        // 3. Map sang DTO và trả về
+        return list.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
 
 

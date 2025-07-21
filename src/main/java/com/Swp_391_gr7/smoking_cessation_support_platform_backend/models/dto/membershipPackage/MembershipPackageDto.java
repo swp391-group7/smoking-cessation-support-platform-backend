@@ -15,6 +15,7 @@ public class MembershipPackageDto {
     private UUID id;
     private UUID userId;
     private UUID packagetTypeId;
+    private UUID coachId; // Có thể null nếu không có coach đồng hành
     private String packageTypeName;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

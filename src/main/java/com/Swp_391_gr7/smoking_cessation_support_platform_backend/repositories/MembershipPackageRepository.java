@@ -1,6 +1,7 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Membership_Package;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,5 +41,22 @@ public interface MembershipPackageRepository extends JpaRepository<Membership_Pa
     List<UUID> findDistinctUserIdsWithActiveMembership(
             @Param("now") LocalDateTime now
     );
+    Optional<Membership_Package> findByUserIdAndIsActiveTrue(UUID userId);
 
+    // … các method hiện tại …
+
+    /**
+     * 1. Lấy danh sách User DISTINCT đã có package được assign cho coach này
+     */
+    @Query("""
+      SELECT DISTINCT m.user
+      FROM Membership_Package m
+      WHERE m.coach.userId = :coachId
+    """)
+    List<User> findDistinctUsersByCoachId(@Param("coachId") UUID coachId);
+
+    /**
+     * 2. Lấy tất cả Membership_Package của một user với coach cụ thể
+     */
+    List<Membership_Package> findAllByUserIdAndCoach_UserId(UUID userId, UUID coachId);
 }

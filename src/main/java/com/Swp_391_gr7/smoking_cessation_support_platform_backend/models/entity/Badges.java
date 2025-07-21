@@ -18,8 +18,7 @@ import java.util.UUID;
 @Table(name = "badges")
 public class Badges {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "UUID")
     private UUID id;
 
@@ -29,8 +28,11 @@ public class Badges {
     @Column(name = "badge_description", nullable = false, length = 255)
     private String badgeDescription;
 
-    @Column(name="badge_image_url", nullable = false, length = 255)
+    @Column(name="badge_image_url", nullable = false, length = 1000000)
     private String badgeImageUrl;
+
+    @Column(name = "condition", nullable = false)
+    private Integer condition; // Điều kiện để đạt được huy hiệu
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

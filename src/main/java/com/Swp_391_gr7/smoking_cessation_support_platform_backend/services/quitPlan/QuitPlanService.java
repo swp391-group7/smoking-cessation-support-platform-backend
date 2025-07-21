@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quit
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanWithStepsDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public interface QuitPlanService {
     void delete(UUID id, UUID userId);
     List<QuitPlanDto> getAll();
     List<QuitPlanDto> searchByMethodOrStatus(String method, String status, UUID userId);
-    QuitPlanDto generatePlanFromSurvey(UUID userId, UUID smokeSurveyId);
+    QuitPlanWithStepsDto generatePlanFromSurvey(UUID userId, UUID smokeSurveyId);
 
     QuitPlanDto getActivePlanByUserId(UUID userId);
 
@@ -42,5 +43,9 @@ public interface QuitPlanService {
     QuitPlanDto updateLatestDraft(UUID userId, UpdateQuitPlanRequest request);
     Integer getCurrentZeroStreak(UUID userId);
     Integer getMaxZeroStreak(UUID userId);
+
+    QuitPlanDto activatePlan(UUID userId, UUID planId);
+    List<QuitPlanDto> getPlansByUserId(UUID userId);
+
 
 }

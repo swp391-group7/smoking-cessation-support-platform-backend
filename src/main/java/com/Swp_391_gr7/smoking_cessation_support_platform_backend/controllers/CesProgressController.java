@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesProgress.CesProgressServiceImpl;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -45,24 +47,31 @@ public class CesProgressController {
 
     @Operation(
             summary = "Create a new cessation progress",
-            description = "Tạo mới tiến trình cai thuốc cho user trong một bước kế hoạch. Trả về dữ liệu DTO của tiến trình vừa tạo."
+            description = "Tạo mới tiến trình cai thuốc cho user trong một bước kế hoạch. Trả về DTO của tiến trình vừa tạo và danh sách huy hiệu mới."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Progress created successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CesProgressDto.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data",
-                    content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized",
-                    content = @Content)
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Progress created successfully with badges",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CreateProgressResponse.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
     @PostMapping("/create")
-    public ResponseEntity<CesProgressDto> createProgress(
+    public ResponseEntity<CreateProgressResponse> createProgress(
             @Valid @RequestBody CreateCesProgressRequest request) {
 
-        CesProgressDto dto = cesProgressService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        // bây giờ service.create(...) trả về CreateProgressResponse
+        CreateProgressResponse resp = cesProgressService.create(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(resp);
     }
+
 
     @Operation(
             summary = "Update cessation progress",
@@ -163,7 +172,8 @@ public class CesProgressController {
     })
     @GetMapping("/statistics/today")
     public ResponseEntity<Integer> getTotalCigarettesToday() {
-        Integer total = cesProgressService.getTotalCigarettesToday();
+        UUID userId = UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName());
+        Integer total = cesProgressService.getTotalCigarettesToday(userId);
         return ResponseEntity.ok(total);
     }
 
@@ -185,7 +195,8 @@ public class CesProgressController {
             @Parameter(description = "Ngày cần tính tổng (format: yyyy-MM-dd)", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        Integer total = cesProgressService.getTotalCigarettesByDate(date);
+        Integer total = cesProgressService.getTotalCigarettesByDate(date,
+                UUID.fromString(SecurityContextHolder.getContext().getAuthentication().getName()));
         return ResponseEntity.ok(total);
     }
 
@@ -305,6 +316,63 @@ public class CesProgressController {
         return ResponseEntity.ok(count);
     }
 
+    @Operation(
+            summary = "Count today's progress by plan ID",
+            description = "Đếm số bản ghi progress đã tạo hôm nay cho một kế hoạch cụ thể"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Count retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/progress/today/{planId}")
+    public ResponseEntity<Integer> countTodayProgressByPlan(
+            @Parameter(description = "ID của kế hoạch", required = true)
+            @PathVariable UUID planId) {
 
+        int count = cesProgressService.countTodayProgress(planId);
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(
+            summary = "Count today's progress for current user",
+            description = "Đếm số bản ghi progress đã tạo hôm nay cho user đang đăng nhập (plan active)"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Count retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/statistics/progress/today")
+    public ResponseEntity<Integer> countTodayProgressForUser() {
+        UUID userId = UUID.fromString(
+                SecurityContextHolder.getContext().getAuthentication().getName()
+        );
+        int count = cesProgressService.countTodayProgressByUser(userId);
+        return ResponseEntity.ok(count);
+    }
+
+
+    @Operation(
+            summary = "Get all cessation progress by plan‑step ID",
+            description = "Lấy tất cả bản ghi tiến trình cai thuốc cho một bước kế hoạch cụ thể"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Progress list retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CesProgressDto.class))),
+            @ApiResponse(responseCode = "404", description = "Plan step not found", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
+    @GetMapping("/by-step-id/{planStepId}")
+    public ResponseEntity<List<CesProgressDto>> getAllByPlanStepId(
+            @Parameter(description = "ID của bước kế hoạch", required = true)
+            @PathVariable UUID planStepId) {
+        List<CesProgressDto> list = cesProgressService.getAllByPlanStepId(planStepId);
+        return ResponseEntity.ok(list);
+    }
 
 }

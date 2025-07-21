@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.cesP
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.UpdateCesProgressRequest;
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public interface CesProgressService {
      * @param request thông tin tạo mới
      * @return DTO của tiến trình vừa tạo
      */
-    CesProgressDto create(CreateCesProgressRequest request);
+    CreateProgressResponse create(CreateCesProgressRequest request);
 
     /**
      * Cập nhật tiến trình đã tồn tại
@@ -45,5 +46,19 @@ public interface CesProgressService {
     List<CesProgressDto> getAllByPlanId(UUID planId);
 
     int countUniqueProgress(UUID planId);
+
+     /* Đếm số bản ghi progress đã tạo hôm nay theo planId
+     * @param planId ID của plan
+     * @return số lượng progress records hôm nay
+     */
+    int countTodayProgress(UUID planId);
+
+    /**
+     * Đếm số bản ghi progress đã tạo hôm nay theo userId (plan active)
+     * @param userId ID của user
+     * @return số lượng progress records hôm nay
+     */
+    int countTodayProgressByUser(UUID userId);
+    List<CesProgressDto> getAllByPlanStepId(UUID planStepId);
 
 }

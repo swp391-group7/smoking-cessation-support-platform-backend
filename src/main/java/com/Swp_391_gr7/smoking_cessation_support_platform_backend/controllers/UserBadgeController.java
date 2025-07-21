@@ -58,9 +58,6 @@ public class UserBadgeController {
     })
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserBadges(@PathVariable UUID userId, Authentication authentication) {
-        if (!isAdmin(authentication)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You're not authorized to view this user");
-        }
         return ResponseEntity.ok(userBadgesService.getUserBadges(userId));
     }
 

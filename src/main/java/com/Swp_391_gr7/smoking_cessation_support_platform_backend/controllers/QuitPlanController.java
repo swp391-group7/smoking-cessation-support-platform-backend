@@ -2,9 +2,12 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanCreateRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanWithStepsDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.userSurvey.UserSurveyDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quitPlan.QuitPlanService;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.user.UserService;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.userSurvey.UseSurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +29,7 @@ import java.util.UUID;
 public class QuitPlanController {
     private final QuitPlanService quitPlanService;
     private final UserService userService;
-
+    private final UseSurveyService userSurveyService;
 
 
     private UUID getCurrentUserId() {
@@ -53,9 +56,18 @@ public class QuitPlanController {
                             schema = @Schema(implementation = QuitPlanDto.class))),
             @ApiResponse(responseCode = "404", description = "Survey or User not found", content = @Content)
     })
-    @PostMapping("/generate-from-survey/{surveyId}")
-    public ResponseEntity<QuitPlanDto> generateFromSurvey(@PathVariable UUID surveyId) {
-        QuitPlanDto dto = quitPlanService.generatePlanFromSurvey(getCurrentUserId(), surveyId);
+// 4. Cập nhật Controller
+    @PostMapping("/generate-from-survey")
+    public ResponseEntity<QuitPlanWithStepsDto> generateFromSurvey() {
+        UUID userId = getCurrentUserId();
+        UserSurveyDto latestSurvey = userSurveyService.getFirstSurveyOfUser(userId);
+
+        QuitPlanWithStepsDto dto = quitPlanService.generatePlanFromSurvey(getCurrentUserId(), latestSurvey.getId());
+        System.out.println("Plan: " + dto.getStartDate() + " → " + dto.getTargetDate());
+        dto.getSteps().forEach(s ->
+                System.out.println("Step " + s.getStepNumber()
+                        + ": " + s.getStepStartDate() + " → " + s.getStepEndDate()));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -82,6 +94,21 @@ public class QuitPlanController {
         QuitPlanDto dto = quitPlanService.createDraftPlan(getCurrentUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
+    @Operation(summary = "Activate a draft Quit Plan",
+            description = "Chuyển kế hoạch từ trạng thái draft sang active, đồng thời tự động đóng các plan active cũ.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Plan activated successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = QuitPlanDto.class))),
+            @ApiResponse(responseCode = "404", description = "Plan not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Plan must be in draft state", content = @Content)
+    })
+    @PutMapping("/{planId}/activate")
+    public ResponseEntity<QuitPlanDto> activatePlan(@PathVariable UUID planId) {
+        QuitPlanDto dto = quitPlanService.activatePlan(getCurrentUserId(), planId);
+        return ResponseEntity.ok(dto);
+    }
+
 
     @Operation(summary = "Update the latest draft Quit Plan")
     @ApiResponses({
@@ -222,6 +249,11 @@ public class QuitPlanController {
     public ResponseEntity<Integer> getMaxZeroStreak() {
         Integer max = quitPlanService.getMaxZeroStreak(getCurrentUserId());
         return ResponseEntity.ok(max);
+    }
+
+    @GetMapping("/users/{userId}/plans")
+    public ResponseEntity<List<QuitPlanDto>> getPlansByUser(@PathVariable UUID userId) {
+        return ResponseEntity.ok( quitPlanService.getPlansByUserId(userId) );
     }
 
 }

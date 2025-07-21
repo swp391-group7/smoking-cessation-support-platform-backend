@@ -3,14 +3,19 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.memb
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.CreateMembershipPackageRequest;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.MembershipPackageDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.UpdateMemberShipPackageRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.user.UserDto;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Coach;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Membership_Package;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Package_Types;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.User;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CoachRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.MembershipPackageRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.PackageTypeRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +29,7 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
     private final MembershipPackageRepository membershipPackageRepository;
     private final UserRepository userRepository;
     private final PackageTypeRepository packageTypeRepository;
-
+    private final CoachRepository coachRepository;
     @Override
     public MembershipPackageDto create(UUID userId, UUID packageTypeId, CreateMembershipPackageRequest request) {
         User user = userRepository.findById(userId)
@@ -108,12 +113,68 @@ public class MembershipPackageServiceImpl implements MembershipPackageService {
                 )
                 .isPresent();
     }
+    @Override
+    @Transactional
+    public MembershipPackageDto assignCoach(UUID userId, UUID coachId) {
+        // 1. Lấy gói active của user
+        Membership_Package pkg = membershipPackageRepository
+                .findByUserIdAndIsActiveTrue(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No active membership for user " + userId));
+
+        // 2. Lấy reference của Coach (hoặc validate tồn tại nếu cần)
+        Coach coach = coachRepository
+                .findById(coachId)
+                .orElseThrow(() -> new EntityNotFoundException("Coach not found: " + coachId));
+
+        // 3. Gán coach và lưu
+        pkg.setCoach(coach);
+        Membership_Package saved = membershipPackageRepository.save(pkg);
+
+        // 4. Chuyển thành DTO và trả về
+        return toDto(saved);
+    }
+    // Hàm tiện ích chuyển User → UserDto
+    private UserDto toUserDto(User u) {
+        return UserDto.builder()
+                .id(u.getId())
+                .username(u.getUsername())
+                // Không nên expose password thực, thường sẽ null hoặc bỏ qua
+                .password(null)
+                .email(u.getEmail())
+                .providerId(u.getProviderId())
+                .fullName(u.getFullName())
+                .phoneNumber(u.getPhoneNumber())
+                .dob(u.getDob())
+                .sex(u.getSex())
+                .avtarPath(u.getAvtarPath())
+                .preStatus(u.getPreStatus())
+                .createdAt(u.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    public List<UserDto> getUsersByCoach(UUID coachId) {
+        List<User> users = membershipPackageRepository.findDistinctUsersByCoachId(coachId);
+        return users.stream()
+                .map(this::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MembershipPackageDto> getMembershipsByUserAndCoach(UUID userId, UUID coachId) {
+        return membershipPackageRepository
+                .findAllByUserIdAndCoach_UserId(userId, coachId)
+                .stream()
+                .map(this::toDto)  // dùng lại toDto() cho MembershipPackageDto
+                .collect(Collectors.toList());
+    }
 
     private MembershipPackageDto toDto(Membership_Package e) {
         return MembershipPackageDto.builder()
                 .id(e.getId())
                 .userId(e.getUser().getId())
                 .packagetTypeId(e.getPackageType().getId())
+                .coachId(e.getCoach() != null ? e.getCoach().getUserId() : null) // <— có thể null nếu chưa gán coach
                 .packageTypeName(e.getPackageType().getName()) // <— lấy tên từ Package_Types
                 .startDate(e.getStartDate())
                 .endDate(e.getEndDate())

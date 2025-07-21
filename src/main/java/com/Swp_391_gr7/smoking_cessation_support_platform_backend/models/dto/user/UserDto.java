@@ -21,6 +21,7 @@ public class UserDto {
     private String fullName;
     private String phoneNumber;
     private LocalDate dob;
+    private String sex;
     private String avtarPath;
     private Boolean preStatus;
     private LocalDateTime createdAt;

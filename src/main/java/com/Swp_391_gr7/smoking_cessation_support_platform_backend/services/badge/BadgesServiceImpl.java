@@ -30,6 +30,7 @@ public class BadgesServiceImpl implements BadgesService {
                 .badgeName(dto.getBadgeName())
                 .badgeDescription(dto.getBadgeDescription())
                 .badgeImageUrl(dto.getBadgeImageUrl())
+                .condition(dto.getCondition())
                 .build();
         Badges saved = badgesRepository.save(badge);
         return toDto(saved);
@@ -56,6 +57,7 @@ public class BadgesServiceImpl implements BadgesService {
                 .badgeName(badge.getBadgeName())
                 .badgeDescription(badge.getBadgeDescription())
                 .badgeImageUrl(badge.getBadgeImageUrl())
+                .condition(badge.getCondition())
                 .createdAt(badge.getCreatedAt())
                 .build();
     }

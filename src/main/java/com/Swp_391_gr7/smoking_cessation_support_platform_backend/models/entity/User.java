@@ -39,7 +39,7 @@ public class User {
     private LocalDate dob;
     private String avtarPath;
     private String providerId;
-
+    private String sex;
 //    @ColumnDefault("false")
     private Boolean PreStatus;
 

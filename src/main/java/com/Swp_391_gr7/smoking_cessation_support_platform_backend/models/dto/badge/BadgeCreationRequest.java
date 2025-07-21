@@ -12,4 +12,5 @@ public class BadgeCreationRequest {
     private String badgeName;
     private String badgeDescription;
     private String badgeImageUrl;
+    private Integer condition;
 }
