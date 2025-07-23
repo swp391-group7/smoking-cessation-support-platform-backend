@@ -1,6 +1,8 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.payment;
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.membershipPackage.CreateMembershipPackageRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.payment.MonthlyPaymentStat;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.payment.PaymentSummary;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.membershippackage.MembershipPackageService;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Payer;
@@ -13,11 +15,10 @@ import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -145,5 +146,50 @@ public class PaymentServiceImp implements PaymentService {
     public List<com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Payment>
     getAllPaymentsByUserAndStatus(UUID userId, String status) {
         return paymentRepo.findAllByUser_IdAndStatus(userId, status);
+    }
+
+
+
+
+    public PaymentSummary getOverallSummary() {
+        List<Object[]> rows = paymentRepo.fetchTotalAmountAndCount();
+        // Nếu không có bản ghi, khởi tạo mặc định 0
+        Object[] row = rows.isEmpty()
+                ? new Object[]{ BigDecimal.ZERO, 0L }
+                : rows.get(0);
+
+        BigDecimal totalAmount = (BigDecimal) row[0];
+        long       totalCount  = ((Number) row[1]).longValue();
+        return new PaymentSummary(totalAmount, totalCount);
+    }
+
+
+    /** 2. Monthly stats for a given year */
+    public List<MonthlyPaymentStat> getMonthlyStats(int year) {
+        // fetch raw data [ month, sum, count ]
+        List<Object[]> rows = paymentRepo.fetchMonthlyTotalsForYear(year);
+
+        // map month→(sum,count)
+        Map<Integer, Object[]> map = rows.stream()
+                .collect(Collectors.toMap(
+                        r -> ((Number) r[0]).intValue(),
+                        r -> r
+                ));
+
+        // for each month 1..12, build record or nulls
+        List<MonthlyPaymentStat> stats = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) {
+            if (map.containsKey(m)) {
+                Object[] r = map.get(m);
+                stats.add(new MonthlyPaymentStat(
+                        m,
+                        (BigDecimal) r[1],
+                        ((Number) r[2]).longValue()
+                ));
+            } else {
+                stats.add(new MonthlyPaymentStat(m, null, 0));
+            }
+        }
+        return stats;
     }
 }
