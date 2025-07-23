@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -255,5 +256,17 @@ public class QuitPlanController {
     public ResponseEntity<List<QuitPlanDto>> getPlansByUser(@PathVariable UUID userId) {
         return ResponseEntity.ok( quitPlanService.getPlansByUserId(userId) );
     }
+    @GetMapping("/plans/statuses")
+    public ResponseEntity<List<QuitPlanDto>> getByStatuses(
+            @RequestParam UUID userId,
+            @RequestParam List<String> status  // e.g. ?status=completed&status=active&status=cancelled
+    ) {
+        List<QuitPlanDto> dtos = quitPlanService.getPlansByStatuses(userId, status);
+        return ResponseEntity.ok(dtos);
+    }
 
+    @GetMapping("/counts")
+    public ResponseEntity<Map<String, Long>> getAllStatusCounts() {
+        return ResponseEntity.ok(quitPlanService.getGlobalPlanCounts());
+    }
 }

@@ -28,9 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -552,6 +550,27 @@ public class QuitPlanServiceImpl implements QuitPlanService {
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuitPlanDto> getPlansByStatuses(UUID userId, List<String> statuses) {
+        // ensure statuses are lowercase to match DB
+        List<String> normalized = statuses.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
 
+        List<Quit_Plan> plans = quitPlanRepository.findByUserIdAndStatusIn(userId, normalized);
+        return plans.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Long> getGlobalPlanCounts() {
+        Map<String, Long> counts = new HashMap<>();
+        for (String status : List.of("active", "completed", "cancelled")) {
+            counts.put(status, quitPlanRepository.countByStatusIgnoreCase(status));
+        }
+        return counts;
+    }
 }

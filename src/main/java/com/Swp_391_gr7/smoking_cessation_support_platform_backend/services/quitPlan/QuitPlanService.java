@@ -5,6 +5,7 @@ import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.pla
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.QuitPlanWithStepsDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.plan.UpdateQuitPlanRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface QuitPlanService {
@@ -46,6 +47,6 @@ public interface QuitPlanService {
 
     QuitPlanDto activatePlan(UUID userId, UUID planId);
     List<QuitPlanDto> getPlansByUserId(UUID userId);
-
-
+    List<QuitPlanDto> getPlansByStatuses(UUID userId, List<String> statuses);
+    Map<String, Long> getGlobalPlanCounts();
 }
