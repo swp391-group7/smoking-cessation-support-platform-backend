@@ -4,6 +4,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.feed
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.CoachFeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackResponseDTO;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.SystemFeedbackUpdateDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.*;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.CoachRepository;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.repositories.FeedbackRepository;
@@ -258,5 +259,31 @@ public class FeedBackServiceImpl implements FeedBackService {
                 .createdAt(fb.getCreatedAt())
                 .build();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public FeedbackResponseDTO getSystemFeedbackByUser(UUID userId) {
+        FeedBack fb = feedbackRepo
+                .findByUser_IdAndTargetType(userId, FeedbackTarget.SYSTEM)
+                .orElseThrow(() ->
+                        new RuntimeException("Feedback hệ thống không tồn tại cho user " + userId)
+                );
+        return mapToDto(fb);
+    }
 
+    @Override
+    @Transactional
+    public FeedbackResponseDTO updateSystemFeedbackById(UUID feedbackId, SystemFeedbackUpdateDTO dto) {
+        FeedBack fb = feedbackRepo.findById(feedbackId)
+                .orElseThrow(() -> new RuntimeException("Feedback not found: " + feedbackId));
+
+        if (fb.getTargetType() != FeedbackTarget.SYSTEM) {
+            throw new IllegalStateException("Cannot update non‑SYSTEM feedback via this endpoint");
+        }
+
+        fb.setRating(dto.getRating());
+        fb.setComment(dto.getComment());
+        FeedBack updated = feedbackRepo.save(fb);
+
+        return mapToDto(updated);
+    }
 }

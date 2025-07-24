@@ -44,4 +44,6 @@ public interface FeedbackRepository extends JpaRepository<FeedBack, UUID> {
     Optional<FeedBack> findByUser_IdAndTargetType(UUID userId, FeedbackTarget targetType);
 
     Optional<FeedBack> findByUser_IdAndMembershipPackage_Id(UUID userId, UUID membershipPkgId);
+
+
 }
