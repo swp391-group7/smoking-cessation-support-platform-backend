@@ -1,5 +1,7 @@
 package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.payment.MonthlyPaymentStat;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.payment.PaymentSummary;
 import com.paypal.api.payments.Payment;  // PayPal SDK
 import com.paypal.base.rest.PayPalRESTException;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.payment.CreatePaymentRequest;
@@ -133,5 +135,22 @@ public class PaymentController {
         ).collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
+    }
+    @GetMapping("/summary")
+    public ResponseEntity<PaymentSummary> getSummary() {
+        PaymentSummary summary = paymentService.getOverallSummary();
+        return ResponseEntity.ok(summary);
+    }
+
+    /**
+     * 2. Thống kê theo tháng trong 1 năm
+     *    GET /api/payments/stats?year=2024
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<List<MonthlyPaymentStat>> getMonthlyStats(
+            @RequestParam("year") int year
+    ) {
+        List<MonthlyPaymentStat> stats = paymentService.getMonthlyStats(year);
+        return ResponseEntity.ok(stats);
     }
 }

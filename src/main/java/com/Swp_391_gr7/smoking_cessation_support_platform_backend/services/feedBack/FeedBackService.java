@@ -4,6 +4,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.feed
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.CoachFeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackResponseDTO;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.SystemFeedbackUpdateDTO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,4 +39,7 @@ public interface FeedBackService {
      * Tính avg rating của tất cả feedback hệ thống.
      */
     BigDecimal computeSystemAvgRating();
+
+    FeedbackResponseDTO getSystemFeedbackByUser(UUID userId);
+    FeedbackResponseDTO updateSystemFeedbackById(UUID feedbackId, SystemFeedbackUpdateDTO dto);
 }
