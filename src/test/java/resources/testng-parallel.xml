@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
-<suite name="ParallelSuite" parallel="methods" thread-count="2">
-    <test name="ParallelTest">
-        <classes>
-            <class name="com.Swp_391_gr7.smoking_cessation_support_platform_backend.SmokingCessationSupportPlatformBackendApplicationTest"/>
-        </classes>
-    </test>
-
-</suite>
