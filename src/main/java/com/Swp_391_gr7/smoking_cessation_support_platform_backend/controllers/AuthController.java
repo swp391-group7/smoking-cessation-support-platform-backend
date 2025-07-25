@@ -72,6 +72,9 @@ public class AuthController {
                 .password(hashedPassword)
                 .fullName(signinRequest.getFullName())
                 .email(signinRequest.getEmail())
+                .dob(signinRequest.getDob())
+                .sex(signinRequest.getSex())
+                .phoneNumber(signinRequest.getPhoneNumber())
                 .role(userRole)
                 .build();
 
