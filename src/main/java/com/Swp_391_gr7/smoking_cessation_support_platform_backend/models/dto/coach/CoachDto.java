@@ -13,5 +13,5 @@ public class CoachDto {
     private UUID userId;
     private String bio;
     private String qualification;
-    private BigDecimal avgRating;
+
 }
