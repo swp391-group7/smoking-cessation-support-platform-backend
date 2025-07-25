@@ -2,6 +2,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.quit
 
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CesProgressDto;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateCesProgressRequest;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.cesProgress.CreateProgressResponse;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Cessation_Progress;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.entity.Quit_Plan_Step;
@@ -85,8 +86,7 @@ public class QuitPlanServiceImplTests {
         when(cesProgressRepository.findDailyTotalsByPlan(planId)).thenReturn(mockData);
         when(quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId)).thenReturn(List.of(step));
 
-        // WHEN
-        CesProgressDto result = cesProgressService.create(request);
+        CreateProgressResponse result = cesProgressService.create(request);
 
         // THEN
         assertEquals(2, plan.getCurrentZeroStreak());
@@ -113,7 +113,7 @@ public class QuitPlanServiceImplTests {
         when(cesProgressRepository.findDailyTotalsByPlan(planId)).thenReturn(mockData);
         when(quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId)).thenReturn(List.of(step));
 
-        CesProgressDto result = cesProgressService.create(request);
+        CreateProgressResponse result = cesProgressService.create(request);
 
         assertEquals(5, plan.getCurrentZeroStreak());
         assertEquals(5, plan.getMaxZeroStreak());
@@ -139,7 +139,7 @@ public class QuitPlanServiceImplTests {
         when(cesProgressRepository.findDailyTotalsByPlan(planId)).thenReturn(mockData);
         when(quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId)).thenReturn(List.of(step));
 
-        CesProgressDto result = cesProgressService.create(request);
+        CreateProgressResponse result = cesProgressService.create(request);
 
         assertEquals(0, plan.getCurrentZeroStreak());
         assertEquals(0, plan.getMaxZeroStreak());
@@ -169,7 +169,7 @@ public class QuitPlanServiceImplTests {
         when(cesProgressRepository.findDailyTotalsByPlan(planId)).thenReturn(mockData);
         when(quitPlanStepRepository.findByPlanIdOrderByStepStartDateAsc(planId)).thenReturn(List.of(step));
 
-        CesProgressDto result = cesProgressService.create(request);
+        CreateProgressResponse result = cesProgressService.create(request);
 
         assertEquals(2, plan.getCurrentZeroStreak()); // từ ngày 0 -> ngày -1
         assertEquals(2, plan.getMaxZeroStreak());
