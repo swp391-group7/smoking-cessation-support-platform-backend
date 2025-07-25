@@ -43,7 +43,6 @@ public class CoachServiceImpl implements CoachService {
                 .user(user) // @MapsId sẽ dùng user.id làm coach.id
                 .bio(dto.getBio())
                 .qualification(dto.getQualification())
-                .avgRating(dto.getAvgRating() == null ? BigDecimal.ZERO : dto.getAvgRating())
                 .build();
 
         Coach saved = coachRepository.save(coach);
@@ -58,7 +57,7 @@ public class CoachServiceImpl implements CoachService {
 
         coach.setBio(request.getBio());
         coach.setQualification(request.getQualification());
-        coach.setAvgRating(request.getAvgRating());
+
 
         return mapToDto(coachRepository.save(coach));
     }
@@ -93,7 +92,7 @@ public class CoachServiceImpl implements CoachService {
                 .userId(coach.getUser().getId())
                 .bio(coach.getBio())
                 .qualification(coach.getQualification())
-                .avgRating(coach.getAvgRating())
+
                 .build();
     }
 }

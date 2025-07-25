@@ -37,7 +37,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(CreateUserRequest request) {
         String hashedPassword = passwordEncoder.encode(request.getPassword());
-
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã được sử dụng");
+        }
         Role role = roleRepository.findByRole(request.getRoleName())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Role not found: " + request.getRoleName()
