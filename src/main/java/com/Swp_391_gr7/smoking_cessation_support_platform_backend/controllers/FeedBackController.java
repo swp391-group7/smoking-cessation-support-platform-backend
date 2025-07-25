@@ -3,6 +3,7 @@ package com.Swp_391_gr7.smoking_cessation_support_platform_backend.controllers;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.CoachFeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackRequestDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.FeedbackResponseDTO;
+import com.Swp_391_gr7.smoking_cessation_support_platform_backend.models.dto.feedBack.SystemFeedbackUpdateDTO;
 import com.Swp_391_gr7.smoking_cessation_support_platform_backend.services.feedBack.FeedBackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -214,4 +215,18 @@ public class FeedBackController {
         return ResponseEntity.ok(updated);
     }
 
+    @GetMapping("/system/{userId}")
+    public ResponseEntity<FeedbackResponseDTO> getSystemFeedback(@PathVariable UUID userId) {
+        FeedbackResponseDTO dto = feedBackService.getSystemFeedbackByUser(userId);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PatchMapping("/system/{id}")
+    public ResponseEntity<FeedbackResponseDTO> updateSystemFeedback(
+            @PathVariable("id") UUID id,
+            @RequestBody SystemFeedbackUpdateDTO dto
+    ) {
+        FeedbackResponseDTO result = feedBackService.updateSystemFeedbackById(id, dto);
+        return ResponseEntity.ok(result);
+    }
 }

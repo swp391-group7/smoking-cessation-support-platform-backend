@@ -14,7 +14,7 @@ public interface QuitPlanRepository extends JpaRepository<Quit_Plan, UUID> {
     List<Quit_Plan> findByUserIdAndStatusIgnoreCase(UUID userId, String status);
 //    List<Quit_Plan> findByUserIdAndMethodIgnoreCase(UUID userId, String method);
 List<Quit_Plan> findByStatusIgnoreCase(String status);
+    List<Quit_Plan> findByUserIdAndStatusIn(UUID userId, List<String> statuses);
 
-
-
+    long countByStatusIgnoreCase(String status);
 }
