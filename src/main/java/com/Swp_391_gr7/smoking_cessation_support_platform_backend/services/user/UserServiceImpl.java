@@ -135,10 +135,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream()
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role USER not found"));
+        List<User> users = userRepository.findByRole(userRole);
+        return users.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)
