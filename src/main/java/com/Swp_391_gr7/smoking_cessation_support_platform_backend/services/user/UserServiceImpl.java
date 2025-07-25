@@ -135,10 +135,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream()
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role USER not found"));
+        List<User> users = userRepository.findByRole(userRole);
+        return users.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -171,22 +175,22 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<userStatsDto.MonthlyUserStats> getUserStatsByMonthInYear(int year) {
-        List<Object[]> results = userRepository.countUsersByMonthInYear(year);
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role USER not found"));
 
-        // Tạo map để đảm bảo tất cả 12 tháng đều có dữ liệu
+        List<Object[]> results = userRepository.countUsersByMonthInYearAndRole(year, userRole.getId());
+
         Map<Integer, Long> monthlyData = new HashMap<>();
         for (int i = 1; i <= 12; i++) {
             monthlyData.put(i, 0L);
         }
 
-        // Cập nhật dữ liệu từ database
         for (Object[] result : results) {
             Integer month = (Integer) result[0];
             Long count = (Long) result[1];
             monthlyData.put(month, count);
         }
 
-        // Chuyển đổi thành danh sách MonthlyUserStats
         return monthlyData.entrySet().stream()
                 .map(entry -> userStatsDto.MonthlyUserStats.builder()
                         .month(entry.getKey())
@@ -196,17 +200,20 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public List<userStatsDto.AgeGroupStats> getUserStatsByAgeGroup() {
-        List<User> usersWithDob = userRepository.findAllUsersWithDob();
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role USER not found"));
+
+        List<User> usersWithDob = userRepository.findAllUsersWithDobAndRole(userRole.getId());
         LocalDate today = LocalDate.now();
 
-        // Đếm người dùng theo nhóm tuổi
         Map<String, Long> ageGroupCounts = new HashMap<>();
-        ageGroupCounts.put("18-29", 0L); // Tuổi trẻ - thường bắt đầu hút thuốc
-        ageGroupCounts.put("30-49", 0L); // Tuổi trung niên - nhóm chính cần cai thuốc
-        ageGroupCounts.put("50+", 0L);   // Tuổi cao - có nhiều vấn đề sức khỏe
+        ageGroupCounts.put("18-29", 0L);
+        ageGroupCounts.put("30-49", 0L);
+        ageGroupCounts.put("50+", 0L);
 
         for (User user : usersWithDob) {
             int age = Period.between(user.getDob(), today).getYears();
@@ -228,12 +235,15 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     @Transactional(readOnly = true)
     public List<userStatsDto.GenderStats> getUserStatsByGender() {
-        List<Object[]> results = userRepository.countUsersByGender();
+        Role userRole = roleRepository.findByRole("user")
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role USER not found"));
 
-        // Đảm bảo cả male và female đều có dữ liệu
+        List<Object[]> results = userRepository.countUsersByGenderAndRole(userRole.getId());
+
         Map<String, Long> genderData = new HashMap<>();
         genderData.put("male", 0L);
         genderData.put("female", 0L);
@@ -253,6 +263,7 @@ public class UserServiceImpl implements UserService {
                         .build())
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)
