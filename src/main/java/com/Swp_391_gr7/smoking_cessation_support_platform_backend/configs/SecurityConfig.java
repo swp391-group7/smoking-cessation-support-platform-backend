@@ -46,8 +46,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webjars/**",
                                 "/blogs/display-8-blog",
-//                                "/roles/**",
-//                                "/users/**", // Thêm đường dẫn cho user
+                                "/roles/**",
+                                "/users/**", // Thêm đường dẫn cho user
                                 "/package-types/get-all", // Thêm đường dẫn cho package types
                                 "/api/payments/**",
                                 "/blogs/display-all-blog",
