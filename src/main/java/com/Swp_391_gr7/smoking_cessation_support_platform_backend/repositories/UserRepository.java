@@ -33,4 +33,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Lấy tất cả người dùng có ngày sinh không null
     @Query("SELECT u FROM User u WHERE u.dob IS NOT NULL")
     List<User> findAllUsersWithDob();
+    @Query("SELECT MONTH(u.createdAt), COUNT(u) FROM User u WHERE YEAR(u.createdAt) = :year AND u.role.id = :roleId GROUP BY MONTH(u.createdAt)")
+    List<Object[]> countUsersByMonthInYearAndRole(@Param("year") int year, @Param("roleId") UUID roleId);
+    @Query("SELECT u FROM User u WHERE u.dob IS NOT NULL AND u.role.id = :roleId")
+    List<User> findAllUsersWithDobAndRole(@Param("roleId") UUID roleId);
+    @Query("SELECT u.sex, COUNT(u) FROM User u WHERE u.role.id = :roleId GROUP BY u.sex")
+    List<Object[]> countUsersByGenderAndRole(@Param("roleId") UUID roleId);
+
 }
