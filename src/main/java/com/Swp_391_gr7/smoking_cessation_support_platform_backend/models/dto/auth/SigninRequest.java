@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 
 @RequiredArgsConstructor
 @Getter
@@ -30,4 +32,7 @@ public class SigninRequest {
             example = "email@gmail.com"
     )
     private String email;
+    private String phoneNumber;
+    private LocalDate dob;
+    private String sex;
 }
